@@ -59,7 +59,7 @@ export function montarDevolutiva(dados) {
   const porTema = new Map(dados.temas.map(grupo => [grupo.tema, grupo]));
   const exemplos = [...ranking, ...temasSemPosicao]
     .filter(tema => tema.recorrentes > 0)
-    .slice(0, 3)
+    .slice(0, 2)
     .map(tema => escolherExemplo(porTema.get(tema.tema)));
   const leitura = descreverDevolutiva(dados.frequencias, recorrentes, ranking);
   return { ranking, temasSemPosicao, exemplos, recorrentes, leitura };

@@ -2,7 +2,7 @@ import { OPCOES, criarRodada, responder, destacar, resumir } from './motor.mjs';
 import { montarDevolutiva, ORIENTACAO_CONSULTA } from './devolutiva.mjs';
 import { baixarRelatorio } from './relatorio.mjs';
 
-const LIMITE_DA_RODADA = 'As situações mostram o que você relatou nas últimas quatro semanas. Para identificar traços de autismo ou sinais de TDAH, é preciso avaliar o histórico e o impacto na sua rotina.';
+const LIMITE_DA_RODADA = 'Este questionário descreve suas experiências nas últimas quatro semanas. As 50 perguntas não foram validadas para confirmar ou descartar traços de autismo ou sinais de TDAH. Em uma avaliação, o profissional considera desde quando essas experiências acontecem, em quais ambientes e como afetam sua rotina.';
 const CRITERIO_DO_RANKING = 'A ordem usa a proporção de “Muitas vezes” ou “Quase sempre ou sempre” entre as respostas com frequência de cada tema. Para ter posição, o tema precisa de duas ou mais frequências informadas e ao menos uma das duas respostas mais altas. “Não vivi essa situação” e “Prefiro pular” ficam fora da conta.';
 
 let banco = [];
@@ -362,18 +362,26 @@ function secaoDevolutiva(leitura) {
     outros.append(elemento('summary', '', 'Temas sem posição no ranking'), listaDaDevolutiva(leitura.temasSemPosicao, false));
     secao.append(outros);
   }
-  if (leitura.exemplos.length) {
-    const exemplos = elemento('details', 'flow-help');
-    const lista = elemento('ul', 'flow-exemplos');
-    for (const item of leitura.exemplos) {
-      const linha = elemento('li');
-      linha.append(descricao(item.texto), elemento('strong', '', item.resposta));
-      lista.append(linha);
-    }
-    exemplos.append(elemento('summary', '', 'Ver exemplos das minhas respostas'), lista);
-    secao.append(exemplos);
+  return secao;
+}
+
+function secaoExemplos(itens) {
+  const secao = elemento('section', 'flow-section flow-exemplos-consulta');
+  secao.append(elemento('h2', '', 'Exemplos para levar à consulta'));
+  if (!itens.length) {
+    secao.append(descricao('Se quiser conversar sobre alguma situação, veja suas respostas por tema e escolha o que faz sentido levar.'));
+    return secao;
   }
-  secao.append(descricao(LIMITE_DA_RODADA, 'flow-callout'));
+  const lista = elemento('ul', 'flow-exemplos');
+  for (const item of itens) {
+    const linha = elemento('li');
+    linha.append(descricao(item.texto), elemento('strong', '', item.resposta));
+    lista.append(linha);
+  }
+  secao.append(
+    descricao('Estas situações receberam frequências entre as mais altas da sua rodada. Se fizerem sentido para você, conte o que acontece e o que costuma ajudar.'),
+    lista
+  );
   return secao;
 }
 
@@ -385,9 +393,11 @@ function secaoConsulta(go) {
   sus.rel = 'noopener noreferrer';
   sus.referrerPolicy = 'no-referrer';
   secao.append(
+    elemento('h2', '', 'Sobre traços de autismo e sinais de TDAH'),
+    descricao(LIMITE_DA_RODADA),
     elemento('h2', '', 'Preparar minha consulta'),
     descricao(ORIENTACAO_CONSULTA),
-    descricao('Na consulta, conte quando percebeu essas situações, onde elas acontecem e o que costuma ajudar. Você pode levar o PDF completo ou apenas seus destaques.'),
+    descricao('Você pode levar o PDF completo ou apenas seus destaques.'),
     acoes(sus, botao('Sobre autismo, TDAH e os instrumentos', () => go('sobre'), 'button-link'))
   );
   return secao;
@@ -415,7 +425,8 @@ function resumo(pagina, go) {
         resumo: leitura.leitura,
         orientacao: ORIENTACAO_CONSULTA,
         criterio: CRITERIO_DO_RANKING,
-        ranking: leitura.ranking
+        ranking: leitura.ranking,
+        exemplos: leitura.exemplos
       });
     } catch {
       statusPdf.hidden = false;
@@ -427,6 +438,7 @@ function resumo(pagina, go) {
     statusPdf,
     descricao('O PDF reúne as 50 perguntas, suas respostas e a devolutiva. O arquivo é criado neste dispositivo.', 'flow-subtle'),
     secaoDevolutiva(leitura),
+    secaoExemplos(leitura.exemplos),
     secaoConsulta(go)
   );
   const grupos = elemento('div', 'flow-groups');

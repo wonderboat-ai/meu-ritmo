@@ -1,4 +1,4 @@
-# Verificação do Meu ritmo · versão 2.2
+# Verificação do Meu ritmo · versão 2.3
 
 A revisão cobriu a devolutiva por frequência, o PDF completo, o retorno ao questionário e as regras do banco. Os cenários de verificação usaram respostas fictícias.
 
@@ -7,6 +7,7 @@ A revisão cobriu a devolutiva por frequência, o PDF completo, o retorno ao que
 ## Devolutiva e PDF
 
 - O ranking compara, em cada tema, a proporção de “Muitas vezes” e “Quase sempre ou sempre” entre as situações com frequência informada. O numerador e o denominador ficam visíveis. Proporções iguais dividem a posição. Um tema precisa de pelo menos duas frequências informadas e uma resposta nas duas alternativas mais frequentes para ter posição. A devolutiva descreve a rodada de autorreflexão.
+- A tela exibe automaticamente até dois exemplos com a pergunta e a resposta originais. A explicação sobre traços de autismo e sinais de TDAH aparece de forma explícita, acompanhada da orientação para consulta. A devolutiva do PDF traz os mesmos exemplos e a mesma explicação.
 - O botão de download gera o PDF no dispositivo mesmo sem destaques selecionados. O documento contém as 50 perguntas e respostas, as contagens, a devolutiva e a orientação para consulta. Foram conferidos os 50 pares em rodadas fictícias mista, com respostas frequentes e com todas as perguntas puladas. O texto extraído conservou os acentos. A impressão dos destaques continua disponível.
 - O PDF foi conferido em A4, com texto selecionável e numeração de páginas. O arquivo não contém tags de acessibilidade. A devolutiva e as respostas também estão disponíveis na página em HTML.
 
@@ -33,7 +34,7 @@ A suíte de interface cobre o avanço sem resposta, voltar e editar, pular, info
 
 Os cenários de acessibilidade usam Chromium, 320 CSS px de largura, tamanho de fonte a 200% e espaçamento amplo. Eles verificam os temas claro, escuro e de alto contraste, as cores forçadas do sistema, a ordem de Tab, o foco desobstruído, o tamanho dos controles e a ausência de rolagem horizontal.
 
-A suíte verificou 48 combinações de tela e modo de cor e 933 ocorrências de controles nessa execução. A tela de resumo foi testada com os 12 temas no ranking. A quantidade de controles pode variar conforme as perguntas sorteadas.
+A suíte verificou 48 combinações de tela e modo de cor. A tela de resumo foi testada com os 12 temas no ranking.
 
 Uma revisão visual adicional verificou a abertura no Chromium em 36 combinações de largura, tema e tamanho de texto. Nenhuma apresentou recorte do título ou rolagem horizontal.
 
@@ -45,7 +46,7 @@ Os comandos de teste e de empacotamento estão no [README.md](README.md). Em um 
 
 Os dois HTMLs de distribuição coincidem byte a byte. SHA-256:
 
-    92a9c83726f74df2a2ad6ff099bde22423364a56b2de914774a492e15ac20a01
+    de5dfde648dd9c544e4e8229c542f757261b756dd31de8f0bd4e406a82fbf791
 
 ## Verificações com pessoas e aparelhos físicos
 

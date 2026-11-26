@@ -106,13 +106,13 @@ function comporPaginas(dados, leitura) {
 
   novaPagina();
   linha('Meu resumo para consulta', 26, 'forte', TINTA, 32);
-  paragrafo(leitura.introducao ?? `${dados.total} situações do cotidiano nas últimas quatro semanas.`);
+  paragrafo(`${dados.total} situações do cotidiano nas últimas quatro semanas.`);
   y -= 11;
   paragrafo(`${dados.frequencias} com frequência marcada  |  ${dados.naoVividas} não vividas  |  ${dados.pulos} em “Prefiro pular”`, 11, 'forte');
   y -= 15;
-  titulo('Como ler este resumo');
+  titulo('O que apareceu na sua rodada');
   if (leitura.resumo) paragrafo(leitura.resumo);
-  paragrafo('Este é um questionário de autorreflexão. A frequência pode descrever uma dificuldade, uma estratégia que ajuda ou uma preferência. A avaliação de autismo ou TDAH considera o seu histórico e o efeito dessas situações na sua rotina.');
+  else paragrafo('A frequência pode descrever uma dificuldade, uma estratégia que ajuda ou uma preferência.');
   y -= 14;
 
   const ranking = leitura.ranking ?? [];
@@ -127,9 +127,32 @@ function comporPaginas(dados, leitura) {
     y -= 13;
   }
 
-  caber(105);
+  const exemplos = (leitura.exemplos ?? []).slice(0, 2);
+  if (exemplos.length) {
+    const linhas = exemplos.reduce((total, item) => {
+      return total + quebrarLinhas(item.texto, 11, 'regular', COLUNA - 6).length
+        + quebrarLinhas(`Resposta: ${item.resposta}`, 11, 'forte', COLUNA - 6).length;
+    }, 0);
+    caber(22 + linhas * 15 + exemplos.length * 8);
+    titulo('Exemplos para levar à consulta');
+    for (const item of exemplos) {
+      paragrafo(item.texto, 11, 'regular', TINTA, 6);
+      paragrafo(`Resposta: ${item.resposta}`, 11, 'forte', AZUL, 6);
+      y -= 8;
+    }
+    y -= 6;
+  }
+
+  const limite = leitura.introducao ?? 'Este questionário descreve suas experiências nas últimas quatro semanas. As 50 perguntas não foram validadas para confirmar ou descartar traços de autismo ou sinais de TDAH. Em uma avaliação, o profissional considera desde quando essas experiências acontecem, em quais ambientes e como afetam sua rotina.';
+  caber(22 + quebrarLinhas(limite, 11, 'regular').length * 15);
+  titulo('Sobre traços de autismo e sinais de TDAH');
+  paragrafo(limite);
+  y -= 14;
+
+  const orientacao = leitura.orientacao ?? 'Se alguma situação afeta sua rotina ou você quer entendê-la melhor, leve este resumo a um psicólogo com formação em neuropsicologia ou a uma clínica com experiência em avaliação de autismo e TDAH em adultos. Pelo SUS, você pode começar pela UBS.';
+  caber(22 + quebrarLinhas(orientacao, 11, 'regular').length * 15);
   titulo('Para levar à consulta');
-  paragrafo(leitura.orientacao ?? 'Se alguma situação afeta sua rotina ou você quer entendê-la melhor, leve este resumo a um psicólogo com formação em neuropsicologia ou a uma clínica com experiência em avaliação de autismo e TDAH em adultos. Pelo SUS, você pode começar pela UBS.');
+  paragrafo(orientacao);
   y -= 20;
 
   caber(122);

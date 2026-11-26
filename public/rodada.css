@@ -101,7 +101,7 @@
 .flow-section {margin-block: 2rem 1.5rem; border-top: 1px solid var(--line); padding-top: 1.45rem}
 .flow-section-head {display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .25rem 1rem; margin-bottom: .65rem}
 .flow-section-head h2, .flow-section-head .flow-subtle {margin: 0}
-.flow-devolutiva > h2, .flow-consulta > h2 {margin-top: 0}
+.flow-devolutiva > h2, .flow-exemplos-consulta > h2, .flow-consulta > h2:first-child {margin-top: 0}
 .flow-ranking, .flow-exemplos {list-style: none; margin: .75rem 0 1.05rem; padding: 0}
 .flow-ranking {
   border: 1px solid var(--line); border-radius: .6rem; background: var(--paper);

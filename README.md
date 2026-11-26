@@ -1,4 +1,4 @@
-# Meu ritmo · versão 2.2
+# Meu ritmo · versão 2.3
 
 Um questionário sobre o seu cotidiano. Uma pessoa adulta pode recordar as últimas quatro semanas, responder a 50 situações e baixar a devolutiva e todas as respostas em PDF com um clique.
 
@@ -10,7 +10,7 @@ Para usar offline, baixe o ZIP do repositório, extraia os arquivos e abra **ind
 
 O conteúdo educativo e os ajustes de leitura estão disponíveis para qualquer idade. A rodada pede apenas a confirmação “Tenho 18 anos ou mais”. O banco é autoral e não foi validado para rastrear ou diagnosticar autismo ou TDAH. AQ de adultos e ASRS-v1.1 de seis itens têm descrições e links oficiais na página informativa.
 
-O resumo ordena temas pela proporção de “Muitas vezes” e “Quase sempre ou sempre” entre as respostas com frequência. A tela mostra o numerador e o denominador, conserva os empates e apresenta à parte temas com base insuficiente ou sem essas respostas. O botão **Baixar PDF completo** inclui todas as perguntas e as escolhas literais da rodada. **Imprimir meus destaques** continua disponível para levar apenas exemplos selecionados. O PDF é gerado no próprio dispositivo e traz uma orientação para preparar a consulta.
+O resumo ordena temas pela proporção de “Muitas vezes” e “Quase sempre ou sempre” entre as respostas com frequência. A tela mostra o numerador e o denominador, conserva os empates e apresenta à parte temas com base insuficiente ou sem essas respostas. O resumo já mostra até dois exemplos da rodada e explica o que o questionário permite interpretar. O botão **Baixar PDF completo** leva essa mesma devolutiva ao arquivo, junto com todas as perguntas e as escolhas literais. **Imprimir meus destaques** permite levar apenas exemplos selecionados. O PDF é gerado no próprio dispositivo.
 
 A rede neural em 3D fica parada até a pessoa escolher interagir. Em **Explorar**, é possível girar a rede, mudar o ângulo e enviar um pulso de luz. **Desacelerar** apresenta menos conexões e luz mais suave. A interação aceita mouse, toque, botões e teclado. Com o foco no desenho, as setas controlam a rotação e a inclinação. A tecla Home restaura a posição.
 

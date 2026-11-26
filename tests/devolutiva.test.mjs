@@ -36,7 +36,7 @@ test('ordena pelas proporções exatas, preserva empates e usa as respostas orig
   assert.deepEqual(temasSemPosicao.map(({ tema, naoVividas, pulos }) => [tema, naoVividas, pulos]), [
     ['Tema D', 2, 1], ['Tema E', 1, 1],
   ]);
-  assert.deepEqual(exemplos, [dados.temas[1].itens[1], dados.temas[0].itens[1], dados.temas[2].itens[0]]);
+  assert.deepEqual(exemplos, [dados.temas[1].itens[1], dados.temas[0].itens[1]]);
   assert.deepEqual(dados, antes);
 });
 

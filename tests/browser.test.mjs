@@ -624,7 +624,40 @@ async function checkRanking(page, questionsAnswered, answerAt) {
   }
 }
 
-async function checkCompletePdf(page, questionsAnswered, answerAt) {
+const examplesHeading = 'Exemplos para levar à consulta';
+const screeningLimitsHeading = 'Sobre traços de autismo e sinais de TDAH';
+
+async function checkExamples(page, questionsAnswered, answerAt) {
+  const heading = page.getByRole('heading', { name: examplesHeading, exact: true });
+  assert.equal(await heading.isVisible(), true, 'Os exemplos ficam disponíveis sem abrir controles');
+  const section = page.locator('section').filter({ has: heading }).last();
+  const rows = await section.getByRole('listitem').all();
+  assert.equal(rows.length, 2);
+  const examples = [];
+  const themes = new Set();
+  for (const row of rows) {
+    assert.equal(await row.isVisible(), true);
+    const text = await row.innerText();
+    const index = questionsAnswered.findIndex(question => text.includes(question));
+    assert.notEqual(index, -1, 'O exemplo reproduz uma pergunta desta rodada');
+    const question = questionsAnswered[index];
+    const answer = answerAt(index);
+    assert(options.slice(2, 4).includes(answer));
+    assert.equal(await row.getByText(question, { exact: true }).isVisible(), true);
+    assert.equal(await row.getByText(answer, { exact: true }).isVisible(), true, 'O exemplo preserva a resposta literal');
+    themes.add(questions.get(question));
+    examples.push({ question, answer });
+  }
+  assert.equal(themes.size, 2, 'Os exemplos mostram temas diferentes');
+  const limits = page.getByRole('heading', { name: screeningLimitsHeading, exact: true });
+  assert.equal(await limits.isVisible(), true);
+  const interpretation = await page.locator('section').filter({ has: limits }).last().innerText();
+  assert.match(interpretation, /não (?:foram|foi) validad[oa]s?/i);
+  assert.match(interpretation, /desde quando.*em quais ambientes.*como afetam sua rotina/i);
+  return examples;
+}
+
+async function checkCompletePdf(page, questionsAnswered, answerAt, examples) {
   const [download] = await Promise.all([
     page.waitForEvent('download'),
     button(page, 'Baixar PDF completo').click()
@@ -642,6 +675,13 @@ async function checkCompletePdf(page, questionsAnswered, answerAt) {
     .join(' ').replace(/\s+/g, ' ');
   assert(content.includes('Respostas por tema'));
   assert.match(content, /neuropsicolog/i);
+  const preview = content.slice(0, content.indexOf('Respostas por tema'));
+  assert(preview.includes(examplesHeading), 'Os exemplos aparecem antes da lista completa');
+  assert(preview.includes(screeningLimitsHeading));
+  assert.match(preview, /não (?:foram|foi) validad[oa]s?/i);
+  for (const { question, answer } of examples) {
+    assert(preview.includes(question + ' Resposta: ' + answer), 'O PDF preserva o exemplo da tela');
+  }
   const responses = content.slice(content.indexOf('Respostas por tema') + 'Respostas por tema'.length);
   for (const [index, question] of questionsAnswered.entries()) {
     assert(responses.includes(question + ' Resposta: ' + answerAt(index)), 'Par literal exportado: ' + question);
@@ -661,6 +701,10 @@ for (const [label, counts] of [
     assert.equal(await button(page, 'Revisar respostas').isVisible(), true);
     assert.equal(await button(page, 'Baixar PDF completo').isEnabled(), true);
     assert.equal(await rankingRows(page).count(), 0);
+    const heading = page.getByRole('heading', { name: examplesHeading, exact: true });
+    assert.equal(await heading.isVisible(), true);
+    assert.equal(await page.locator('section').filter({ has: heading }).last().getByRole('listitem').count(), 0);
+    assert.equal(await page.getByRole('heading', { name: screeningLimitsHeading, exact: true }).isVisible(), true);
     cleanTrace(trace);
   });
 }
@@ -681,12 +725,14 @@ test('resultado misto, ranking, PDF completo, destaque, revisão, nova rodada e 
   // As posições 1–48 completam oito ciclos, 49–50 são frequências.
   assert.deepEqual(await summaryCounts(page), [34, 8, 8]);
   assert.equal(await page.getByRole('heading', { name: 'O que apareceu com mais frequência' }).isVisible(), true);
+  assert.equal(await page.getByText(/16 das 34 situações com frequência informada/).isVisible(), true);
   assert.equal(await page.getByRole('heading', { name: 'Preparar minha consulta' }).isVisible(), true);
   const sus = page.getByRole('link', { name: 'Como buscar atendimento pelo SUS', exact: true });
   assert.equal(new URL(await sus.getAttribute('href')).hostname, 'www.gov.br');
   assert.equal(await page.locator('main input[type=checkbox]:checked').count(), 0);
   await checkRanking(page, firstRound, firstAnswer);
-  await checkCompletePdf(page, firstRound, firstAnswer);
+  const originalExamples = await checkExamples(page, firstRound, firstAnswer);
+  await checkCompletePdf(page, firstRound, firstAnswer, originalExamples);
   await button(page, 'Expandir todos os temas').click();
   await cdp.send('Page.setFontSizes', { fontSizes: { standard: 32 } });
   await noOverflow(page);
@@ -720,7 +766,8 @@ test('resultado misto, ranking, PDF completo, destaque, revisão, nova rodada e 
   assert.equal(await button(page, 'Imprimir meus destaques').isDisabled(), true);
   const editedAnswer = i => i === 49 ? 'Não vivi essa situação' : firstAnswer(i);
   await checkRanking(page, firstRound, editedAnswer);
-  await checkCompletePdf(page, firstRound, editedAnswer);
+  const editedExamples = await checkExamples(page, firstRound, editedAnswer);
+  await checkCompletePdf(page, firstRound, editedAnswer, editedExamples);
   await button(page, 'Fazer outra rodada').click();
   const nextRound = await answerRound(page, () => 'Às vezes');
   assert(nextRound.every(text => !firstRound.includes(text)));
