@@ -1,4 +1,9 @@
 import { OPCOES, criarRodada, responder, destacar, resumir } from './motor.mjs';
+import { montarDevolutiva, ORIENTACAO_CONSULTA } from './devolutiva.mjs';
+import { baixarRelatorio } from './relatorio.mjs';
+
+const LIMITE_DA_RODADA = 'As situações mostram o que você relatou nas últimas quatro semanas. Para identificar traços de autismo ou sinais de TDAH, é preciso avaliar o histórico e o impacto na sua rotina.';
+const CRITERIO_DO_RANKING = 'A ordem usa a proporção de “Muitas vezes” ou “Quase sempre ou sempre” entre as respostas com frequência de cada tema. Para ter posição, o tema precisa de duas ou mais frequências informadas e ao menos uma das duas respostas mais altas. “Não vivi essa situação” e “Prefiro pular” ficam fora da conta.';
 
 let banco = [];
 let rodada = null;
@@ -98,7 +103,7 @@ function entrada(pagina, go) {
   const abertura = elemento('header', 'flow-heading');
   abertura.append(
     titulo('Antes de começar'),
-    descricao('Pense nas últimas quatro semanas. Você verá 50 situações, uma por vez, e poderá voltar ou pausar quando quiser. No fim, suas respostas ficam reunidas por tema.', 'flow-lead')
+    descricao('Pense nas últimas quatro semanas. Você verá 50 situações, uma por vez, e poderá voltar ou pausar quando quiser. No fim, você verá os temas com respostas mais frequentes e poderá baixar todas as suas respostas em PDF.', 'flow-lead')
   );
   pagina.append(
     abertura,
@@ -317,23 +322,120 @@ function grupoDeRespostas(grupo, atualizarDestaques) {
   return painel;
 }
 
+function listaDaDevolutiva(temas, ordenada) {
+  const lista = elemento('ul', 'flow-ranking');
+  if (ordenada) lista.setAttribute('data-ranking', '');
+  for (const grupo of temas) {
+    const linha = elemento('li', 'flow-rank-row');
+    const nome = elemento('strong', 'flow-rank-theme', grupo.tema);
+    if (ordenada) {
+      linha.dataset.temaRanking = grupo.tema;
+      linha.append(elemento('span', 'flow-rank-position', `${grupo.posicao}º`));
+    }
+    const texto = grupo.frequencias
+      ? `${grupo.recorrentes} de ${grupo.frequencias} com alta frequência`
+      : 'Sem frequência marcada';
+    const contagem = elemento('span', 'flow-rank-count', texto);
+    const nota = grupo.frequencias === 1
+      ? `Frequência marcada em apenas 1 de ${grupo.total} situações`
+      : `Frequência marcada em ${grupo.frequencias} de ${grupo.total} situações`;
+    const detalhe = elemento('span', 'flow-rank-detail', `${nota}. Não vivi: ${grupo.naoVividas}. Pulei: ${grupo.pulos}.`);
+    linha.append(nome, contagem, detalhe);
+    lista.append(linha);
+  }
+  return lista;
+}
+
+function secaoDevolutiva(leitura) {
+  const secao = elemento('section', 'flow-section flow-devolutiva');
+  secao.append(
+    elemento('h2', '', 'O que apareceu com mais frequência'),
+    descricao(leitura.leitura, 'flow-lead')
+  );
+  if (leitura.ranking.length) {
+    const criterio = elemento('details', 'flow-help');
+    criterio.append(elemento('summary', '', 'Como o ranking é calculado'), descricao(CRITERIO_DO_RANKING));
+    secao.append(listaDaDevolutiva(leitura.ranking, true), criterio);
+  }
+  if (leitura.temasSemPosicao.length) {
+    const outros = elemento('details', 'flow-help');
+    outros.append(elemento('summary', '', 'Temas sem posição no ranking'), listaDaDevolutiva(leitura.temasSemPosicao, false));
+    secao.append(outros);
+  }
+  if (leitura.exemplos.length) {
+    const exemplos = elemento('details', 'flow-help');
+    const lista = elemento('ul', 'flow-exemplos');
+    for (const item of leitura.exemplos) {
+      const linha = elemento('li');
+      linha.append(descricao(item.texto), elemento('strong', '', item.resposta));
+      lista.append(linha);
+    }
+    exemplos.append(elemento('summary', '', 'Ver exemplos das minhas respostas'), lista);
+    secao.append(exemplos);
+  }
+  secao.append(descricao(LIMITE_DA_RODADA, 'flow-callout'));
+  return secao;
+}
+
+function secaoConsulta(go) {
+  const secao = elemento('section', 'flow-highlights flow-consulta');
+  const sus = elemento('a', 'button-link', 'Como buscar atendimento pelo SUS');
+  sus.href = 'https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/a/autismo/faq/onde-posso-procurar-diagnostico-para';
+  sus.target = '_blank';
+  sus.rel = 'noopener noreferrer';
+  sus.referrerPolicy = 'no-referrer';
+  secao.append(
+    elemento('h2', '', 'Preparar minha consulta'),
+    descricao(ORIENTACAO_CONSULTA),
+    descricao('Na consulta, conte quando percebeu essas situações, onde elas acontecem e o que costuma ajudar. Você pode levar o PDF completo ou apenas seus destaques.'),
+    acoes(sus, botao('Sobre autismo, TDAH e os instrumentos', () => go('sobre'), 'button-link'))
+  );
+  return secao;
+}
+
 function resumo(pagina, go) {
   revisando = false;
   const dados = resumir(rodada);
+  const leitura = montarDevolutiva(dados);
   const abertura = elemento('header', 'flow-heading');
   abertura.append(titulo('Meu resumo'), descricao('Suas respostas às 50 situações, reunidas por tema.', 'flow-lead'));
   pagina.append(abertura, totais(dados));
   if (!dados.frequencias) {
     pagina.append(descricao('Você concluiu a rodada sem marcar frequências. Pode rever as perguntas se quiser.', 'flow-callout'));
   }
-  pagina.append(acoes(botao('Revisar respostas', () => go('revisao'), 'button-secondary')));
+  const statusPdf = descricao('', 'flow-subtle');
+  statusPdf.hidden = true;
+  statusPdf.setAttribute('role', 'status');
+  const baixar = botao('Baixar PDF completo', () => {
+    statusPdf.hidden = true;
+    statusPdf.textContent = '';
+    try {
+      baixarRelatorio(resumir(rodada), {
+        introducao: LIMITE_DA_RODADA,
+        resumo: leitura.leitura,
+        orientacao: ORIENTACAO_CONSULTA,
+        criterio: CRITERIO_DO_RANKING,
+        ranking: leitura.ranking
+      });
+    } catch {
+      statusPdf.hidden = false;
+      statusPdf.textContent = 'O navegador não conseguiu baixar o PDF. Tente novamente.';
+    }
+  }, 'button-primary');
+  pagina.append(
+    acoes(baixar, botao('Revisar respostas', () => go('revisao'))),
+    statusPdf,
+    descricao('O PDF reúne as 50 perguntas, suas respostas e a devolutiva. O arquivo é criado neste dispositivo.', 'flow-subtle'),
+    secaoDevolutiva(leitura),
+    secaoConsulta(go)
+  );
   const grupos = elemento('div', 'flow-groups');
   const alternar = botao('Expandir todos os temas', () => {
     const abrir = paineis.some(painel => !painel.open);
     for (const painel of paineis) painel.open = abrir;
     atualizarAlternancia();
   }, 'button-link');
-  const imprimir = botao('Imprimir meus destaques', imprimirDestaques, 'button-primary');
+  const imprimir = botao('Imprimir meus destaques', imprimirDestaques);
   const contagem = descricao('', 'flow-subtle');
   function atualizarDestaques() {
     descartarImpressao();
@@ -364,8 +466,6 @@ function resumo(pagina, go) {
     acoes(imprimir)
   );
   pagina.append(porTema, marcados,
-    descricao('Se algo aqui afeta sua rotina e você gostaria de apoio, pode levar exemplos a uma pessoa de confiança ou a um profissional de saúde. No SUS, você pode começar pela sua UBS.', 'flow-callout'),
-    botao('Sobre autismo, TDAH e os instrumentos', () => go('sobre'), 'button-link'),
     elemento('h2', '', 'Outra rodada'),
     descricao('Ao começar outra rodada, as respostas e os destaques desta serão descartados. Enquanto esta página estiver aberta, as próximas 50 situações serão diferentes das que você acabou de responder.'),
     acoes(

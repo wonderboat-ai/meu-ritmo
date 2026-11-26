@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createRequire } from 'node:module';
+import { readFile } from 'node:fs/promises';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
@@ -48,6 +49,14 @@ test('HTML portátil completa uma rodada offline, sem arquivos auxiliares ou ser
     await botao(indice === 49 ? 'Ver meu resumo' : 'Continuar').click();
   }
   assert.equal(await page.locator('[data-total="frequencias"]').innerText(), '50');
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    botao('Baixar PDF completo').click()
+  ]);
+  assert.equal(download.suggestedFilename(), 'meu-ritmo-respostas.pdf');
+  const pdf = await readFile(await download.path(), 'latin1');
+  assert.match(pdf, /^%PDF-1\./);
+  assert.match(pdf, /%%EOF\s*$/);
   await botao('Expandir todos os temas').click();
   const destaques = page.getByRole('main').getByRole('checkbox');
   assert.equal(await destaques.count(), 50);

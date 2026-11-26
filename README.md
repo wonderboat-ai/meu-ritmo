@@ -1,6 +1,6 @@
-# Meu ritmo · versão 2.1
+# Meu ritmo · versão 2.2
 
-Um questionário sobre o seu cotidiano. Uma pessoa adulta pode recordar as últimas quatro semanas, responder a 50 situações e imprimir os exemplos que escolheu para uma conversa.
+Um questionário sobre o seu cotidiano. Uma pessoa adulta pode recordar as últimas quatro semanas, responder a 50 situações e baixar a devolutiva e todas as respostas em PDF com um clique.
 
 ## Abrir e experimentar
 
@@ -10,13 +10,15 @@ Para usar offline, baixe o ZIP do repositório, extraia os arquivos e abra **ind
 
 O conteúdo educativo e os ajustes de leitura estão disponíveis para qualquer idade. A rodada pede apenas a confirmação “Tenho 18 anos ou mais”. O banco é autoral e não foi validado para rastrear ou diagnosticar autismo ou TDAH. AQ de adultos e ASRS-v1.1 de seis itens têm descrições e links oficiais na página informativa.
 
+O resumo ordena temas pela proporção de “Muitas vezes” e “Quase sempre ou sempre” entre as respostas com frequência. A tela mostra o numerador e o denominador, conserva os empates e apresenta à parte temas com base insuficiente ou sem essas respostas. O botão **Baixar PDF completo** inclui todas as perguntas e as escolhas literais da rodada. **Imprimir meus destaques** continua disponível para levar apenas exemplos selecionados. O PDF é gerado no próprio dispositivo e traz uma orientação para preparar a consulta.
+
 A rede neural em 3D fica parada até a pessoa escolher interagir. Em **Explorar**, é possível girar a rede, mudar o ângulo e enviar um pulso de luz. **Desacelerar** apresenta menos conexões e luz mais suave. A interação aceita mouse, toque, botões e teclado. Com o foco no desenho, as setas controlam a rotação e a inclinação. A tecla Home restaura a posição.
 
 Em **Mais ajustes do objeto**, a pessoa pode reduzir a intensidade das cores e escolher movimento reduzido. A cena também respeita a preferência de movimento reduzido do sistema. **Ocultar objeto 3D** recolhe a cena. A pausa no questionário oferece um atalho para a rede neural e preserva o ponto da rodada ao voltar. É uma atividade opcional de exploração sensorial.
 
 ## Rodar e testar o código
 
-Na pasta do projeto, com Node.js 20 ou superior, execute os comandos abaixo. O primeiro roda os testes do banco, do sorteio e do contraste. O segundo inicia o servidor local.
+Na pasta do projeto, com Node.js 20 ou superior, execute os comandos abaixo. O primeiro roda os testes do banco, do sorteio, do contraste e da devolutiva. O segundo inicia o servidor local.
 
 ```sh
 npm test
@@ -63,6 +65,7 @@ npm run pages
 | --- | --- |
 | `public/banco-v1.txt` | Banco canônico versionado com 120 linhas. |
 | `public/motor.mjs` e `public/fluxo.mjs` | Sorteio, respostas, pausa, revisão, resumo e impressão dos destaques. |
+| `public/devolutiva.mjs` e `public/relatorio.mjs` | Ordenação dos temas por frequência e exportação local em PDF. |
 | `public/informacao.mjs` | Textos educativos, fontes oficiais, privacidade e contato público. |
 | `public/atelier.mjs`, `public/constelacao.mjs` e `public/atelier.css` | Controles, desenho da rede neural em perspectiva e estilos da experiência 3D. |
 | `public/index.html`, `public/app.mjs`, `public/estilo.css` e `public/rodada.css` | Entrada, navegação, temas, legibilidade e impressão. |

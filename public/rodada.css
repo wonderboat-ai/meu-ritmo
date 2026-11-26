@@ -101,6 +101,24 @@
 .flow-section {margin-block: 2rem 1.5rem; border-top: 1px solid var(--line); padding-top: 1.45rem}
 .flow-section-head {display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .25rem 1rem; margin-bottom: .65rem}
 .flow-section-head h2, .flow-section-head .flow-subtle {margin: 0}
+.flow-devolutiva > h2, .flow-consulta > h2 {margin-top: 0}
+.flow-ranking, .flow-exemplos {list-style: none; margin: .75rem 0 1.05rem; padding: 0}
+.flow-ranking {
+  border: 1px solid var(--line); border-radius: .6rem; background: var(--paper);
+}
+.flow-rank-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: .7rem; row-gap: .2rem; align-items: baseline; padding: .7rem .9rem;
+}
+.flow-ranking[data-ranking] > li {grid-template-columns: auto minmax(0, 1fr) auto}
+.flow-rank-row + .flow-rank-row, .flow-exemplos li + li {border-top: 1px solid var(--line)}
+.flow-rank-position, .flow-rank-count {color: var(--accent); font-weight: 660; font-variant-numeric: tabular-nums}
+.flow-rank-position {min-width: 1.45em}
+.flow-rank-detail {grid-column: 1 / -1; color: var(--soft); font-size: .88rem}
+.flow-exemplos li {padding-block: .6rem}
+.flow-exemplos li p {margin: 0 0 .2rem}
+.flow-exemplos strong {color: var(--accent)}
+.flow-consulta .flow-actions > a {display: inline-flex; align-items: center; min-height: 44px; min-width: 44px}
 .flow-groups {display: grid; grid-template-columns: minmax(0,1fr); gap: .48rem; margin: 1rem 0 0}
 .flow-page .flow-group {min-width: 0; border: 1px solid var(--line); border-radius: .6rem; background: var(--paper)}
 .flow-group > summary {padding: .86rem 1rem; color: var(--ink); font-weight: 650; cursor: pointer}
@@ -137,6 +155,9 @@
   .flow-counts > div + div {border: 0; border-top: 1px solid var(--line)}
   .flow-counts dd {min-inline-size: 1.35em}
   .flow-group .flow-group-total {display: block; margin: .18rem 0 0}
+  .flow-rank-row, .flow-ranking[data-ranking] > li {grid-template-columns: minmax(0, 1fr)}
+  .flow-ranking[data-ranking] > li {grid-template-columns: auto minmax(0, 1fr)}
+  .flow-rank-count {grid-column: 1 / -1}
 }
 @media (forced-colors: active) {
   .flow-page .flow-progress {appearance: auto}

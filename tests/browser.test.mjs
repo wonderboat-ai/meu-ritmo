@@ -36,7 +36,10 @@ async function staticResponse(url) {
 
 before(async () => {
   const lines = (await readFile(resolve(root, 'banco-v1.txt'), 'utf8')).trim().split(/\r?\n/);
-  questions = new Set(lines.map(line => line.split(' | ')[2]));
+  questions = new Map(lines.map(line => {
+    const [, tema, texto] = line.split(' | ');
+    return [texto, tema];
+  }));
   server = createServer(async (req, res) => {
     const { status, body, contentType } = await staticResponse(new URL(req.url, 'http://localhost'));
     res.writeHead(status, { 'Content-Type': contentType });
@@ -591,6 +594,60 @@ test('leitura do sistema, temas manuais, foco no retorno, texto ampliado e reflo
 const summaryCounts = async page => Promise.all(['frequencias', 'naoVividas', 'pulos'].map(async key =>
   Number((await page.locator('[data-total="' + key + '"]').innerText()).trim())));
 
+const rankingRows = page => page.locator('[data-ranking] [data-tema-ranking]');
+
+async function checkRanking(page, questionsAnswered, answerAt) {
+  const byTheme = new Map();
+  for (const [index, question] of questionsAnswered.entries()) {
+    const tema = questions.get(question);
+    const counts = byTheme.get(tema) ?? { counted: 0, recurring: 0 };
+    const answer = answerAt(index);
+    if (options.slice(0, 4).includes(answer)) counts.counted++;
+    if (options.slice(2, 4).includes(answer)) counts.recurring++;
+    byTheme.set(tema, counts);
+  }
+
+  const rows = await rankingRows(page).evaluateAll(nodes => nodes.map(node => ({
+    tema: node.dataset.temaRanking,
+    summary: node.innerText
+  })));
+  const eligible = [...byTheme].filter(([, counts]) => counts.counted >= 2 && counts.recurring > 0);
+  assert.equal(rows.length, eligible.length);
+  assert.deepEqual(new Set(rows.map(row => row.tema)), new Set(eligible.map(([tema]) => tema)));
+  let lastRatio = 1;
+  for (const row of rows) {
+    const { recurring, counted } = byTheme.get(row.tema);
+    assert.match(row.summary, new RegExp('\\b' + recurring + ' de ' + counted + '\\b'));
+    const ratio = recurring / counted;
+    assert(ratio <= lastRatio, 'Temas em ordem da maior proporção de respostas frequentes');
+    lastRatio = ratio;
+  }
+}
+
+async function checkCompletePdf(page, questionsAnswered, answerAt) {
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    button(page, 'Baixar PDF completo').click()
+  ]);
+  assert.equal(download.suggestedFilename(), 'meu-ritmo-respostas.pdf');
+  const document = await readFile(await download.path(), 'latin1');
+  assert.match(document, /^%PDF-1\./);
+  assert.match(document, /%%EOF\s*$/);
+
+  // O PDF local usa texto WinAnsi em fluxos sem compressão. Decodifica as strings literais
+  // para conferir pares enunciado/resposta, inclusive quando quebrados em várias linhas.
+  const content = [...document.matchAll(/\(((?:\\[^\r\n]|[^\\()\r\n])*)\)\s*Tj/g)]
+    .map(match => match[1].replace(/\\([0-7]{3}|[\\()])/g, (_, escape) =>
+      escape.length === 3 ? String.fromCharCode(parseInt(escape, 8)) : escape))
+    .join(' ').replace(/\s+/g, ' ');
+  assert(content.includes('Respostas por tema'));
+  assert.match(content, /neuropsicolog/i);
+  const responses = content.slice(content.indexOf('Respostas por tema') + 'Respostas por tema'.length);
+  for (const [index, question] of questionsAnswered.entries()) {
+    assert(responses.includes(question + ' Resposta: ' + answerAt(index)), 'Par literal exportado: ' + question);
+  }
+}
+
 for (const [label, counts] of [
   ['Nunca', [50, 0, 0]], ['Prefiro pular', [0, 0, 50]], ['Não vivi essa situação', [0, 50, 0]]
 ]) {
@@ -602,11 +659,13 @@ for (const [label, counts] of [
     const empty = page.getByText('Você concluiu a rodada sem marcar frequências. Pode rever as perguntas se quiser.', { exact: true });
     assert.equal(await empty.isVisible(), label !== 'Nunca');
     assert.equal(await button(page, 'Revisar respostas').isVisible(), true);
+    assert.equal(await button(page, 'Baixar PDF completo').isEnabled(), true);
+    assert.equal(await rankingRows(page).count(), 0);
     cleanTrace(trace);
   });
 }
 
-test('resultado misto, destaque, impressão local, revisão da última, edição, nova rodada e exclusão', async t => {
+test('resultado misto, ranking, PDF completo, destaque, revisão, nova rodada e exclusão', async t => {
   const { page, context, trace } = await open(t, { viewport: { width: 320, height: 640 } });
   const mutations = [];
   const cdp = await context.newCDPSession(page);
@@ -617,9 +676,17 @@ test('resultado misto, destaque, impressão local, revisão da última, edição
   await start(page);
   const beforeRequests = trace.requests.length;
   const history = await page.evaluate(() => history.length);
-  const firstRound = await answerRound(page, i => i === 49 ? 'Nunca' : options[i % options.length]);
+  const firstAnswer = i => i === 49 ? 'Nunca' : options[i % options.length];
+  const firstRound = await answerRound(page, firstAnswer);
   // As posições 1–48 completam oito ciclos, 49–50 são frequências.
   assert.deepEqual(await summaryCounts(page), [34, 8, 8]);
+  assert.equal(await page.getByRole('heading', { name: 'O que apareceu com mais frequência' }).isVisible(), true);
+  assert.equal(await page.getByRole('heading', { name: 'Preparar minha consulta' }).isVisible(), true);
+  const sus = page.getByRole('link', { name: 'Como buscar atendimento pelo SUS', exact: true });
+  assert.equal(new URL(await sus.getAttribute('href')).hostname, 'www.gov.br');
+  assert.equal(await page.locator('main input[type=checkbox]:checked').count(), 0);
+  await checkRanking(page, firstRound, firstAnswer);
+  await checkCompletePdf(page, firstRound, firstAnswer);
   await button(page, 'Expandir todos os temas').click();
   await cdp.send('Page.setFontSizes', { fontSizes: { standard: 32 } });
   await noOverflow(page);
@@ -651,6 +718,9 @@ test('resultado misto, destaque, impressão local, revisão da última, edição
   await button(page, 'Ver meu resumo').click();
   assert.deepEqual(await summaryCounts(page), [33, 9, 8]);
   assert.equal(await button(page, 'Imprimir meus destaques').isDisabled(), true);
+  const editedAnswer = i => i === 49 ? 'Não vivi essa situação' : firstAnswer(i);
+  await checkRanking(page, firstRound, editedAnswer);
+  await checkCompletePdf(page, firstRound, editedAnswer);
   await button(page, 'Fazer outra rodada').click();
   const nextRound = await answerRound(page, () => 'Às vezes');
   assert(nextRound.every(text => !firstRound.includes(text)));
@@ -660,7 +730,7 @@ test('resultado misto, destaque, impressão local, revisão da última, edição
   await showEntry(page);
   assert.equal(await agreement(page).isChecked(), false);
   assert.equal(await page.getByRole('radio').count(), 0);
-  assert.deepEqual(trace.requests.slice(beforeRequests), [], 'Responder, revisar, imprimir, ressorteio e exclusão sem requisições');
+  assert.deepEqual(trace.requests.slice(beforeRequests), [], 'Responder, revisar, exportar, imprimir, ressorteio e exclusão sem requisições');
   assert.equal(await page.evaluate(() => history.length), history);
   assert.equal(page.url(), origin + '/');
   assert.deepEqual(mutations, [], 'Sem escrita transitória em Web Storage');

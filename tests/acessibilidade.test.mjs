@@ -187,11 +187,13 @@ for (const modo of modos) {
     // Exercita os controles do formulário com escolhas sintéticas até o resumo.
     await pagina.evaluate(() => {
       for (let i = 0; i < 50; i++) {
-        document.querySelector('input[name="frequencia"]').click();
+        document.querySelectorAll('input[name="frequencia"]')[i % 2 ? 2 : 3].click();
         document.querySelector(".flow-form button[type=submit]").click();
       }
     });
     await botao("Revisar respostas").waitFor();
+    assert.equal(await botao("Baixar PDF completo").isVisible(), true);
+    assert.equal(await pagina.locator("[data-ranking] [data-tema-ranking]").count(), 12);
     await conferir("Resumo");
     await botao("Revisar respostas").click();
     await conferir("Revisão");

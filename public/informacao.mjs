@@ -61,7 +61,8 @@ export const htmlPrivacidade = `
     <p>Ao pausar, a pergunta fica oculta. Você pode retomar do mesmo ponto enquanto mantiver esta aba aberta. Fechar ou atualizar a página apaga o progresso. Para encerrar antes, escolha “Apagar e sair” e confirme.</p>
   </section>
   <section>
-    <h2>Se você decidir imprimir</h2>
+    <h2>Se você decidir baixar ou imprimir</h2>
+    <p>“Baixar PDF completo” cria um arquivo com as 50 perguntas, as suas respostas e a devolutiva neste dispositivo. Você escolhe onde guardar o arquivo e com quem compartilhar. Apagar a sessão não exclui o arquivo salvo.</p>
     <p>“Imprimir meus destaques” envia para a janela de impressão apenas as situações e respostas que você destacou. O navegador também pode oferecer a opção de salvar em PDF. Você controla essas cópias. Apagar a sessão não exclui um PDF já salvo ou uma impressão em papel.</p>
   </section>
   <section>

@@ -1,6 +1,6 @@
 {
   "name": "meu-ritmo",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Um questionário sobre o seu cotidiano",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node scripts/servir.mjs",
-    "test": "node --test tests/motor.test.mjs tests/contraste.test.mjs",
+    "test": "node --test tests/motor.test.mjs tests/contraste.test.mjs tests/devolutiva.test.mjs",
     "portatil": "node scripts/portatil.mjs",
     "pages": "node scripts/portatil.mjs --pages",
     "pretest:browser": "node scripts/portatil.mjs",
