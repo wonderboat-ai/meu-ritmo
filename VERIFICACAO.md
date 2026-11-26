@@ -1,6 +1,6 @@
-# Verificação do Meu ritmo · versão 2.3
+# Verificação do Meu ritmo · versão 2.4
 
-A revisão cobriu a devolutiva por frequência, o PDF completo, o retorno ao questionário e as regras do banco. Os cenários de verificação usaram respostas fictícias.
+A revisão cobriu as cinco etapas da jornada, o mapa interativo, o PDF com o guia para consulta e as regras do banco. Os cenários de verificação usaram respostas fictícias.
 
 **42 de 42 testes aprovados.** Foram 24 testes de banco, motor, devolutiva e contraste, 14 no Chromium entre a interface e o HTML portátil, e quatro na suíte de acessibilidade.
 
@@ -8,7 +8,8 @@ A revisão cobriu a devolutiva por frequência, o PDF completo, o retorno ao que
 
 - O ranking compara, em cada tema, a proporção de “Muitas vezes” e “Quase sempre ou sempre” entre as situações com frequência informada. O numerador e o denominador ficam visíveis. Proporções iguais dividem a posição. Um tema precisa de pelo menos duas frequências informadas e uma resposta nas duas alternativas mais frequentes para ter posição. A devolutiva descreve a rodada de autorreflexão.
 - A tela exibe automaticamente até dois exemplos com a pergunta e a resposta originais. A explicação sobre traços de autismo e sinais de TDAH aparece de forma explícita, acompanhada da orientação para consulta. A devolutiva do PDF traz os mesmos exemplos e a mesma explicação.
-- O botão de download gera o PDF no dispositivo mesmo sem destaques selecionados. O documento contém as 50 perguntas e respostas, as contagens, a devolutiva e a orientação para consulta. Foram conferidos os 50 pares em rodadas fictícias mista, com respostas frequentes e com todas as perguntas puladas. O texto extraído conservou os acentos. A impressão dos destaques continua disponível.
+- O botão de download gera o PDF no dispositivo. O documento contém as 50 perguntas e respostas, as contagens, o ranking e quatro passos para buscar avaliação, com link clicável para orientação do SUS. Foram conferidos os 50 pares em rodadas fictícias mista, com respostas frequentes e com todas as perguntas puladas. O texto extraído conservou os acentos.
+- Os testes verificam a passagem da pergunta 10 para a 11, a revisão de uma pergunta anterior e o foco após voltar. No resumo, verificam a conclusão da jornada, os filtros do mapa, a expansão de temas pelo teclado, a consulta às respostas e a exportação antes e depois de editar uma resposta.
 - O PDF foi conferido em A4, com texto selecionável e numeração de páginas. O arquivo não contém tags de acessibilidade. A devolutiva e as respostas também estão disponíveis na página em HTML.
 
 ## Identidade e interação
@@ -28,13 +29,13 @@ SHA-256 do banco em UTF-8 com quebras LF e quebra final:
 
 Com 1.000 sementes determinísticas, a suíte do motor produz 3.000 rodadas. Cada uma tem 50 IDs distintos, com dois temas de cinco itens e dez temas de quatro. A suíte verifica interseção vazia entre rodadas imediatamente consecutivas.
 
-A suíte de interface cobre o avanço sem resposta, voltar e editar, pular, informar que a situação não ocorreu, pausar e retomar, alterar a leitura, concluir, revisar, destacar, imprimir, fazer uma nova rodada e apagar. O resumo apresenta as três contagens separadas. O teste de impressão verifica que apenas os destaques são impressos.
+A suíte de interface cobre o avanço sem resposta, voltar e editar, pular, informar que a situação não ocorreu, pausar e retomar, alterar a leitura, concluir, revisar, explorar o ranking, baixar o PDF, fazer uma nova rodada e apagar. O resumo apresenta as três contagens separadas.
 
 ## Acesso e privacidade
 
 Os cenários de acessibilidade usam Chromium, 320 CSS px de largura, tamanho de fonte a 200% e espaçamento amplo. Eles verificam os temas claro, escuro e de alto contraste, as cores forçadas do sistema, a ordem de Tab, o foco desobstruído, o tamanho dos controles e a ausência de rolagem horizontal.
 
-A suíte verificou 48 combinações de tela e modo de cor. A tela de resumo foi testada com os 12 temas no ranking.
+A suíte verificou 52 combinações de tela e modo de cor. A tela de resumo foi testada com os 12 temas no mapa e um tema aberto.
 
 Uma revisão visual adicional verificou a abertura no Chromium em 36 combinações de largura, tema e tamanho de texto. Nenhuma apresentou recorte do título ou rolagem horizontal.
 
@@ -46,12 +47,12 @@ Os comandos de teste e de empacotamento estão no [README.md](README.md). Em um 
 
 Os dois HTMLs de distribuição coincidem byte a byte. SHA-256:
 
-    de5dfde648dd9c544e4e8229c542f757261b756dd31de8f0bd4e406a82fbf791
+    afad61acc613974be2ba9e8017830488168fc452793368c5b1e3ce789f1d9afd
 
 ## Verificações com pessoas e aparelhos físicos
 
-- Percorrer as opções, a pausa e o resumo com NVDA, VoiceOver e TalkBack. Conferir a clareza dos anúncios da pergunta, da seleção, dos destaques e dos controles da cena.
-- Testar com iPhone e Android físicos. Observar fluidez da cena, ampliação do texto, download do PDF e impressão dos destaques.
+- Percorrer as opções, a pausa e o resumo com NVDA, VoiceOver e TalkBack. Conferir a clareza dos anúncios da pergunta, da seleção, das etapas, do mapa e dos controles da cena.
+- Testar com iPhone e Android físicos. Observar fluidez da cena, ampliação do texto e download do PDF.
 - Observar adultos autistas e com TDAH usando os dois modos. Perguntar quando desejam usar a cena e quais níveis de movimento e cor consideram confortáveis.
 
 A cena é uma atividade opcional. O conforto e o efeito percebido são questões de experiência de uso. O questionário de autorreflexão segue sem validação clínica.

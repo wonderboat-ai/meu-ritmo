@@ -195,13 +195,18 @@ for (const modo of modos) {
     assert.equal(await botao("Baixar PDF completo").isVisible(), true);
     assert.equal(await pagina.locator("[data-ranking] [data-tema-ranking]").count(), 12);
     await conferir("Resumo");
+    await botao("Todos os temas").click();
+    const tema = pagina.locator(".mapa-tema").first();
+    await tema.locator(".mapa-tema-botao").click();
+    assert.equal(await tema.locator(".mapa-detalhe").isVisible(), true);
+    await conferir("Mapa completo com um tema aberto");
     await botao("Revisar respostas").click();
     await conferir("Revisão");
     await pagina.locator('nav [data-go="sobre"]').click();
     await conferir("Sobre autismo e TDAH");
     await pagina.locator('footer [data-go="privacidade"]').click();
     await conferir("Privacidade");
-    assert.equal(telas, 12);
+    assert.equal(telas, 13);
     t.diagnostic(telas + " estados de tela e " + controles + " ocorrências de controles visíveis conferidas.");
   });
 }

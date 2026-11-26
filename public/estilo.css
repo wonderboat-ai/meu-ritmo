@@ -48,7 +48,7 @@ body {
 }
 :where(main, section, article, div, label) {min-width: 0}
 main {flex: 1}
-[hidden], #impressao-destaques {display: none !important}
+[hidden] {display: none !important}
 button, select, input {font: inherit; letter-spacing: inherit; word-spacing: inherit}
 button {color: inherit; cursor: pointer; white-space: normal; max-width: 100%; line-height: 1.35}
 button:disabled {cursor: default; background: var(--wash); color: var(--soft); border-color: var(--edge); border-style: dashed}
@@ -161,11 +161,11 @@ main:has(.home)::before {
 .source-list a {display: inline-flex; align-items: center; padding-block: .3rem; overflow-wrap: anywhere}
 .flow-form {margin-block: 1.3rem}
 .flow-actions {margin-block: 1rem}
-.flow-help, .flow-group {background: var(--paper); border: 1px solid var(--edge); border-radius: .55rem}
+.flow-help {background: var(--paper); border: 1px solid var(--edge); border-radius: .55rem}
 summary {cursor: pointer; color: var(--accent); font-weight: 650; padding: .7rem 1rem}
 summary::marker {color: var(--accent)}
 .flow-help {margin-block: 1rem}
-.flow-help p, .flow-group > p {margin: .65rem 1rem 1rem}
+.flow-help p {margin: .65rem 1rem 1rem}
 .flow-callout {padding: .95rem 1.15rem; border-left: .24rem solid var(--accent); background: var(--wash); margin-block: 1rem}
 .flow-error {background: var(--paper); border: 2px solid var(--focus); border-radius: .4rem; padding: .7rem; font-weight: 650}
 .flow-question {border: none; padding: 0; margin: 0; min-width: 0}
@@ -191,10 +191,6 @@ summary::marker {color: var(--accent)}
 .flow-counts dd {margin: 0; font: 400 2.2rem/1.1 Georgia, serif; color: var(--accent)}
 .flow-counts dt, .flow-subtle {color: var(--soft); font-size: .91rem}
 .flow-counts dt {min-width: 0; overflow-wrap: anywhere}
-.flow-groups {display: grid; grid-template-columns: minmax(0,1fr); gap: .65rem; margin: .5rem 0 1.5rem}
-.flow-group {min-width: 0; overflow-wrap: anywhere}
-.flow-group summary {border-radius: .55rem}
-.flow-group-total {display: inline-block; color: var(--soft); font-weight: 400; font-size: .88rem; margin-left: .65rem}
 .flow-list {padding-inline: 1.35rem; margin: 0 0 1rem}
 ul.flow-list {list-style: none}
 .flow-item {padding-block: .85rem; border-top: 1px solid var(--line)}
@@ -243,7 +239,6 @@ dialog::backdrop {background: rgb(15 24 20 / .58)}
   .home-notes {gap: 1.2rem; padding-block: 1.7rem}
   .home-notes > section + section {border-top: 1px solid var(--line); padding-top: 1.3rem}
   .footer-inner {align-items: start}
-  .flow-group-total {display: block; margin-left: 0}
 }
 @media (max-width: 30em) {
   .frame, .reading-page, .flow-page {width: calc(100% - 2rem)}
@@ -275,13 +270,4 @@ dialog::backdrop {background: rgb(15 24 20 / .58)}
   :focus-visible {outline: 3px solid Highlight !important}
   :checked {outline: 1px solid Highlight}
   .flow-progress {appearance: auto}
-}
-@media print {
-  @page {margin: 18mm}
-  body {display: block; background: #fff; color: #000}
-  body > * {display: none !important}
-  body > #impressao-destaques {display: block !important; font: 12pt/1.5 Georgia, serif}
-  #impressao-destaques h1, #impressao-destaques h2 {break-after: avoid; color: #000}
-  #impressao-destaques p {margin: 0; max-width: none}
-  .print-item {break-inside: avoid; margin-bottom: .65rem}
 }

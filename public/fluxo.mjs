@@ -1,9 +1,18 @@
-import { OPCOES, criarRodada, responder, destacar, resumir } from './motor.mjs';
-import { montarDevolutiva, ORIENTACAO_CONSULTA } from './devolutiva.mjs';
+import { OPCOES, criarRodada, responder, resumir } from './motor.mjs';
+import { montarDevolutiva, ORIENTACAO_CONSULTA, PASSOS_CONSULTA, URL_SUS } from './devolutiva.mjs';
 import { baixarRelatorio } from './relatorio.mjs';
 
 const LIMITE_DA_RODADA = 'Este questionário descreve suas experiências nas últimas quatro semanas. As 50 perguntas não foram validadas para confirmar ou descartar traços de autismo ou sinais de TDAH. Em uma avaliação, o profissional considera desde quando essas experiências acontecem, em quais ambientes e como afetam sua rotina.';
 const CRITERIO_DO_RANKING = 'A ordem usa a proporção de “Muitas vezes” ou “Quase sempre ou sempre” entre as respostas com frequência de cada tema. Para ter posição, o tema precisa de duas ou mais frequências informadas e ao menos uma das duas respostas mais altas. “Não vivi essa situação” e “Prefiro pular” ficam fora da conta.';
+const TAMANHO_ETAPA = 10;
+const ETAPAS = 5;
+const INICIO_DA_RODADA = 'A jornada tem cinco etapas de dez perguntas. Pular uma situação também conclui aquele passo. Você pode pausar, voltar e retomar no seu ritmo.';
+const MARCAS = [
+  { estado: 'low', simbolo: '○', legenda: 'Nunca ou às vezes' },
+  { estado: 'high', simbolo: '●', legenda: 'Muitas vezes ou quase sempre' },
+  { estado: 'none', simbolo: '◇', legenda: 'Não vivi essa situação' },
+  { estado: 'skipped', simbolo: '–', legenda: 'Prefiro pular' }
+];
 
 let banco = [];
 let rodada = null;
@@ -74,14 +83,8 @@ function iniciarRodada(idsExcluidos = []) {
   revisando = false;
 }
 
-function descartarImpressao() {
-  document.getElementById('impressao-destaques')?.remove();
-}
-
 export function limparFluxo() {
-  descartarImpressao();
   rodada?.respostas.clear();
-  rodada?.destaques.clear();
   rodada = null;
   posicao = 0;
   maiorDeIdade = false;
@@ -99,7 +102,37 @@ function orientacao() {
   return ajuda;
 }
 
-function entrada(pagina, go) {
+function jornada(etapaAtual, concluidas, visivel, descricaoEtapa) {
+  const bloco = elemento('section', 'journey');
+  bloco.dataset.jornada = '';
+  bloco.dataset.progressoVisual = '';
+  bloco.hidden = !visivel;
+  const cabecalho = elemento('div', 'journey-header');
+  const lista = elemento('ol', 'journey-route');
+  lista.setAttribute('aria-label', 'Etapas da jornada');
+  lista.setAttribute('role', 'list');
+  for (let etapa = 1; etapa <= ETAPAS; etapa++) {
+    const marco = elemento('li');
+    marco.dataset.etapa = etapa;
+    marco.dataset.state = etapa === etapaAtual ? 'current' : etapa <= concluidas ? 'complete' : 'upcoming';
+    const numero = elemento('span', 'journey-step-number', String(etapa));
+    numero.setAttribute('aria-hidden', 'true');
+    const rotulo = elemento('span', 'sr-only', `Etapa ${etapa}`);
+    marco.append(numero, rotulo);
+    if (etapa === etapaAtual) marco.setAttribute('aria-current', 'step');
+    if (etapa <= concluidas) marco.append(elemento('span', 'sr-only', 'Concluída'));
+    lista.append(marco);
+  }
+  cabecalho.append(elemento('h2', '', 'Sua jornada'));
+  bloco.append(cabecalho, lista, descricao(descricaoEtapa, 'journey-caption'));
+  return bloco;
+}
+
+function etapaDaPergunta(numero) {
+  return Math.ceil(numero / TAMANHO_ETAPA);
+}
+
+function entrada(pagina, go, progressoVisivel) {
   const abertura = elemento('header', 'flow-heading');
   abertura.append(
     titulo('Antes de começar'),
@@ -107,6 +140,7 @@ function entrada(pagina, go) {
   );
   pagina.append(
     abertura,
+    jornada(null, 0, progressoVisivel, INICIO_DA_RODADA),
     descricao('Este questionário é de reflexão pessoal. Não foi validado para rastrear ou diagnosticar autismo ou TDAH.', 'flow-callout'),
     descricao('A pausa funciona enquanto esta aba estiver aberta. Atualizar ou fechar esta página apaga suas respostas e seu progresso.'),
     orientacao()
@@ -141,8 +175,9 @@ function entrada(pagina, go) {
 }
 
 export function atualizarProgresso(visible) {
-  const barra = document.querySelector('.flow-progress');
-  if (barra) barra.hidden = !visible;
+  for (const indicador of document.querySelectorAll('[data-progresso-visual]')) {
+    indicador.hidden = !visible;
+  }
 }
 
 function pergunta(pagina, go, progressoVisivel) {
@@ -152,12 +187,20 @@ function pergunta(pagina, go, progressoVisivel) {
   const barra = elemento('progress', 'flow-progress');
   barra.max = total;
   barra.value = numero;
+  barra.dataset.progressoVisual = '';
   barra.hidden = !progressoVisivel;
   barra.setAttribute('aria-hidden', 'true');
   const topo = elemento('header', 'flow-topline');
   topo.append(titulo(`Pergunta ${numero} de ${total}`), descricao(item.tema, 'flow-meta'), barra);
+  const etapa = etapaDaPergunta(numero);
+  const concluidas = Math.floor(rodada.respostas.size / TAMANHO_ETAPA);
+  const entradaNaEtapa = !revisando && etapa > 1 && numero % TAMANHO_ETAPA === 1 && etapa - 1 === concluidas;
+  const situacaoDaEtapa = entradaNaEtapa
+    ? `Etapa ${etapa - 1} concluída. Você chegou à etapa ${etapa} de ${ETAPAS}.`
+    : `Etapa ${etapa} de ${ETAPAS} · Perguntas ${(etapa - 1) * TAMANHO_ETAPA + 1} a ${Math.min(total, etapa * TAMANHO_ETAPA)}`;
   pagina.append(
     topo,
+    jornada(etapa, concluidas, progressoVisivel, situacaoDaEtapa),
     descricao('Nas últimas quatro semanas, com que frequência isso aconteceu nas ocasiões em que essa situação surgiu?', 'flow-intro')
   );
 
@@ -222,9 +265,10 @@ function pergunta(pagina, go, progressoVisivel) {
   pagina.append(secundarias);
 }
 
-function pausa(pagina, go) {
+function pausa(pagina, go, progressoVisivel) {
   pagina.append(
     titulo('Questionário pausado'),
+    jornada(etapaDaPergunta(posicao + 1), Math.floor(rodada.respostas.size / TAMANHO_ETAPA), progressoVisivel, 'Sua jornada fica neste ponto enquanto a aba estiver aberta.'),
     descricao(`Você parou na pergunta ${posicao + 1} de ${rodada.itens.length}. Suas respostas estão ocultas. Pode continuar deste ponto enquanto a página estiver aberta.`),
     descricao('Atualizar ou fechar esta página apaga o progresso.'),
     acoes(
@@ -238,7 +282,7 @@ function pausa(pagina, go) {
 function confirmarExclusao(pagina, go) {
   pagina.append(
     titulo('Apagar e sair?'),
-    descricao('As respostas, os destaques e a sequência desta rodada serão apagados. Essa ação é definitiva. Arquivos ou impressões que você já guardou continuam com você.'),
+    descricao('As respostas e a sequência desta rodada serão apagadas. Essa ação é definitiva. Arquivos que você já guardou continuam com você.'),
     acoes(
       botao('Voltar sem apagar', () => go(origemDaExclusao)),
       botao('Sim, apagar e sair', () => {
@@ -247,29 +291,6 @@ function confirmarExclusao(pagina, go) {
       }, 'button-primary')
     )
   );
-}
-
-function imprimirDestaques() {
-  if (!rodada?.destaques.size) return;
-  descartarImpressao();
-  const folha = elemento('article');
-  folha.id = 'impressao-destaques';
-  folha.append(elemento('h1', '', 'Meus destaques'));
-  for (const grupo of resumir(rodada).temas) {
-    const escolhidos = grupo.itens.filter(item => item.destacado);
-    if (!escolhidos.length) continue;
-    const secao = elemento('section');
-    secao.append(elemento('h2', '', grupo.tema));
-    for (const item of escolhidos) {
-      const trecho = elemento('div', 'print-item');
-      trecho.append(descricao(item.texto), descricao(item.resposta));
-      secao.append(trecho);
-    }
-    folha.append(secao);
-  }
-  document.body.append(folha);
-  window.addEventListener('afterprint', descartarImpressao, { once: true });
-  window.print();
 }
 
 function totais(dados) {
@@ -288,80 +309,99 @@ function totais(dados) {
   return lista;
 }
 
-function grupoDeRespostas(grupo, atualizarDestaques) {
-  const painel = elemento('details', 'flow-group');
-  const cabecalho = elemento('summary');
-  cabecalho.append(
-    elemento('span', 'flow-group-title', grupo.tema),
-    elemento('span', 'flow-group-total', `${grupo.total} situações`)
-  );
-  const contagens = descricao(
-    `Frequência marcada em ${grupo.frequencias} de ${grupo.total}. “Não vivi essa situação”: ${grupo.naoVividas}. “Prefiro pular”: ${grupo.pulos}.`,
-    'flow-subtle'
+function marcaDaResposta(resposta) {
+  const indice = OPCOES.indexOf(resposta);
+  return MARCAS[indice < 4 ? Math.floor(indice / 2) : indice - 2];
+}
+
+function faixaDoMapa(marcas, legenda = false) {
+  const faixa = elemento('ul', 'mapa-faixa');
+  faixa.setAttribute('role', 'list');
+  if (!legenda) faixa.setAttribute('aria-hidden', 'true');
+  for (const marca of marcas) {
+    const ponto = elemento('li', 'mapa-fase', legenda ? `${marca.simbolo} ${marca.legenda}` : marca.simbolo);
+    ponto.dataset.state = marca.estado;
+    faixa.append(ponto);
+  }
+  return faixa;
+}
+
+function cartaoDoTema(grupo, itens, registrarAbertura) {
+  const cartao = elemento('li', 'mapa-tema');
+  if (grupo.posicao) cartao.dataset.temaRanking = grupo.tema;
+  const painel = elemento('div', 'mapa-detalhe');
+  painel.id = `respostas-tema-${itens[0].id.charAt(0)}`;
+  painel.hidden = true;
+  const contagem = grupo.frequencias
+    ? `${grupo.recorrentes} de ${grupo.frequencias} com alta frequência`
+    : 'Sem frequência marcada';
+  const botaoTema = botao(undefined, () => {
+    painel.hidden = !painel.hidden;
+    botaoTema.setAttribute('aria-expanded', String(!painel.hidden));
+    if (!painel.hidden) registrarAbertura(grupo.tema);
+  }, 'mapa-tema-botao');
+  botaoTema.setAttribute('aria-expanded', 'false');
+  botaoTema.setAttribute('aria-controls', painel.id);
+  botaoTema.append(
+    elemento('span', '', grupo.posicao ? `${grupo.posicao}º · ${grupo.tema}` : grupo.tema),
+    elemento('span', 'mapa-contagem', contagem)
   );
   const lista = elemento('ul', 'flow-list');
-  for (const item of grupo.itens) {
+  lista.setAttribute('role', 'list');
+  for (const item of itens) {
     const linha = elemento('li', 'flow-item');
     linha.append(descricao(item.texto, 'flow-item-question'), descricao(item.resposta, 'flow-answer'));
-    if (OPCOES.slice(0, 4).includes(item.resposta)) {
-      const rotulo = elemento('label', 'flow-check');
-      const check = elemento('input');
-      check.type = 'checkbox';
-      check.checked = item.destacado;
-      check.setAttribute('aria-label', `Destacar: ${item.texto}`);
-      check.addEventListener('change', () => {
-        destacar(rodada, item.id, check.checked);
-        atualizarDestaques();
-      });
-      rotulo.append(check, elemento('span', '', 'Destacar'));
-      linha.append(rotulo);
-    }
     lista.append(linha);
   }
-  painel.append(cabecalho, contagens, lista);
-  return painel;
+  painel.append(
+    descricao(`Frequência marcada em ${grupo.frequencias} de ${grupo.total} situações. Não vivi: ${grupo.naoVividas}. Pulei: ${grupo.pulos}.`, 'flow-subtle'),
+    lista
+  );
+  cartao.append(botaoTema, faixaDoMapa(itens.map(item => marcaDaResposta(item.resposta))), painel);
+  return cartao;
 }
 
-function listaDaDevolutiva(temas, ordenada) {
-  const lista = elemento('ul', 'flow-ranking');
-  if (ordenada) lista.setAttribute('data-ranking', '');
-  for (const grupo of temas) {
-    const linha = elemento('li', 'flow-rank-row');
-    const nome = elemento('strong', 'flow-rank-theme', grupo.tema);
-    if (ordenada) {
-      linha.dataset.temaRanking = grupo.tema;
-      linha.append(elemento('span', 'flow-rank-position', `${grupo.posicao}º`));
-    }
-    const texto = grupo.frequencias
-      ? `${grupo.recorrentes} de ${grupo.frequencias} com alta frequência`
-      : 'Sem frequência marcada';
-    const contagem = elemento('span', 'flow-rank-count', texto);
-    const nota = grupo.frequencias === 1
-      ? `Frequência marcada em apenas 1 de ${grupo.total} situações`
-      : `Frequência marcada em ${grupo.frequencias} de ${grupo.total} situações`;
-    const detalhe = elemento('span', 'flow-rank-detail', `${nota}. Não vivi: ${grupo.naoVividas}. Pulei: ${grupo.pulos}.`);
-    linha.append(nome, contagem, detalhe);
-    lista.append(linha);
+function secaoDevolutiva(leitura, dados) {
+  const secao = elemento('section', 'flow-devolutiva mapa-resultado');
+  const porTema = new Map(dados.temas.map(grupo => [grupo.tema, grupo.itens]));
+  const lista = elemento('ul', 'mapa-temas');
+  lista.setAttribute('role', 'list');
+  lista.dataset.ranking = '';
+  const abertos = new Set();
+  const explorados = descricao(`Temas explorados neste resumo: 0 de ${dados.temas.length}.`, 'flow-subtle');
+  explorados.setAttribute('role', 'status');
+  function registrarAbertura(tema) {
+    if (abertos.has(tema)) return;
+    abertos.add(tema);
+    explorados.textContent = `Temas explorados neste resumo: ${abertos.size} de ${dados.temas.length}.`;
   }
-  return lista;
-}
-
-function secaoDevolutiva(leitura) {
-  const secao = elemento('section', 'flow-section flow-devolutiva');
+  const comPosicao = leitura.ranking.map(grupo => cartaoDoTema(grupo, porTema.get(grupo.tema), registrarAbertura));
+  const semPosicao = leitura.temasSemPosicao.map(grupo => cartaoDoTema(grupo, porTema.get(grupo.tema), registrarAbertura));
+  lista.append(...comPosicao, ...semPosicao);
+  const controles = elemento('div', 'mapa-controles');
+  controles.setAttribute('role', 'group');
+  controles.setAttribute('aria-label', 'Temas exibidos');
+  const status = descricao('', 'sr-only');
+  status.setAttribute('role', 'status');
+  const soRanking = botao('Ranking por frequência', () => filtrar(false));
+  const todos = botao('Todos os temas', () => filtrar(true));
+  soRanking.disabled = !comPosicao.length;
+  function filtrar(mostrarTodos, anunciar = true) {
+    for (const cartao of semPosicao) cartao.hidden = !mostrarTodos;
+    soRanking.setAttribute('aria-pressed', String(!mostrarTodos));
+    todos.setAttribute('aria-pressed', String(mostrarTodos));
+    if (anunciar) status.textContent = mostrarTodos ? 'Todos os 12 temas estão visíveis.' : `${comPosicao.length} temas com posição estão visíveis.`;
+  }
+  controles.append(soRanking, todos);
+  filtrar(!comPosicao.length, false);
+  const criterio = elemento('details', 'flow-help');
+  criterio.append(elemento('summary', '', 'Como o ranking é calculado'), descricao(CRITERIO_DO_RANKING));
   secao.append(
     elemento('h2', '', 'O que apareceu com mais frequência'),
-    descricao(leitura.leitura, 'flow-lead')
+    descricao(leitura.leitura, 'flow-lead'),
+    descricao('Abra um tema no mapa para ver suas perguntas e respostas. Cada símbolo corresponde a uma situação.'),
+    controles, status, explorados, faixaDoMapa(MARCAS, true), lista, criterio
   );
-  if (leitura.ranking.length) {
-    const criterio = elemento('details', 'flow-help');
-    criterio.append(elemento('summary', '', 'Como o ranking é calculado'), descricao(CRITERIO_DO_RANKING));
-    secao.append(listaDaDevolutiva(leitura.ranking, true), criterio);
-  }
-  if (leitura.temasSemPosicao.length) {
-    const outros = elemento('details', 'flow-help');
-    outros.append(elemento('summary', '', 'Temas sem posição no ranking'), listaDaDevolutiva(leitura.temasSemPosicao, false));
-    secao.append(outros);
-  }
   return secao;
 }
 
@@ -386,30 +426,36 @@ function secaoExemplos(itens) {
 }
 
 function secaoConsulta(go) {
-  const secao = elemento('section', 'flow-highlights flow-consulta');
+  const secao = elemento('section', 'flow-consulta');
   const sus = elemento('a', 'button-link', 'Como buscar atendimento pelo SUS');
-  sus.href = 'https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/a/autismo/faq/onde-posso-procurar-diagnostico-para';
+  sus.href = URL_SUS;
   sus.target = '_blank';
   sus.rel = 'noopener noreferrer';
   sus.referrerPolicy = 'no-referrer';
+  const passos = elemento('ol', 'guia-passos');
+  for (const passo of PASSOS_CONSULTA) {
+    const linha = elemento('li');
+    linha.append(elemento('strong', '', passo.titulo), descricao(passo.texto));
+    passos.append(linha);
+  }
   secao.append(
     elemento('h2', '', 'Sobre traços de autismo e sinais de TDAH'),
     descricao(LIMITE_DA_RODADA),
     elemento('h2', '', 'Preparar minha consulta'),
     descricao(ORIENTACAO_CONSULTA),
-    descricao('Você pode levar o PDF completo ou apenas seus destaques.'),
+    elemento('h3', '', 'Passo a passo para buscar avaliação'), passos,
     acoes(sus, botao('Sobre autismo, TDAH e os instrumentos', () => go('sobre'), 'button-link'))
   );
   return secao;
 }
 
-function resumo(pagina, go) {
+function resumo(pagina, go, progressoVisivel) {
   revisando = false;
   const dados = resumir(rodada);
   const leitura = montarDevolutiva(dados);
   const abertura = elemento('header', 'flow-heading');
-  abertura.append(titulo('Meu resumo'), descricao('Suas respostas às 50 situações, reunidas por tema.', 'flow-lead'));
-  pagina.append(abertura, totais(dados));
+  abertura.append(titulo('Meu resumo'), elemento('p', 'journey-completion', 'Jornada concluída'), descricao('Suas respostas às 50 situações, reunidas por tema.', 'flow-lead'));
+  pagina.append(abertura, jornada(null, ETAPAS, progressoVisivel, 'Você passou pelas cinco etapas.'), totais(dados));
   if (!dados.frequencias) {
     pagina.append(descricao('Você concluiu a rodada sem marcar frequências. Pode rever as perguntas se quiser.', 'flow-callout'));
   }
@@ -426,7 +472,9 @@ function resumo(pagina, go) {
         orientacao: ORIENTACAO_CONSULTA,
         criterio: CRITERIO_DO_RANKING,
         ranking: leitura.ranking,
-        exemplos: leitura.exemplos
+        exemplos: leitura.exemplos,
+        passos: PASSOS_CONSULTA,
+        susUrl: URL_SUS
       });
     } catch {
       statusPdf.hidden = false;
@@ -436,50 +484,14 @@ function resumo(pagina, go) {
   pagina.append(
     acoes(baixar, botao('Revisar respostas', () => go('revisao'))),
     statusPdf,
-    descricao('O PDF reúne as 50 perguntas, suas respostas e a devolutiva. O arquivo é criado neste dispositivo.', 'flow-subtle'),
-    secaoDevolutiva(leitura),
+    descricao('O PDF reúne as 50 perguntas com suas respostas, o ranking e o passo a passo para buscar avaliação. O arquivo é criado neste dispositivo.', 'flow-subtle'),
+    secaoDevolutiva(leitura, dados),
     secaoExemplos(leitura.exemplos),
     secaoConsulta(go)
   );
-  const grupos = elemento('div', 'flow-groups');
-  const alternar = botao('Expandir todos os temas', () => {
-    const abrir = paineis.some(painel => !painel.open);
-    for (const painel of paineis) painel.open = abrir;
-    atualizarAlternancia();
-  }, 'button-link');
-  const imprimir = botao('Imprimir meus destaques', imprimirDestaques);
-  const contagem = descricao('', 'flow-subtle');
-  function atualizarDestaques() {
-    descartarImpressao();
-    const total = rodada.destaques.size;
-    contagem.textContent = total === 1 ? '1 situação destacada.' : `${total} situações destacadas.`;
-    imprimir.disabled = total === 0;
-  }
-  const paineis = dados.temas.map(grupo => grupoDeRespostas(grupo, atualizarDestaques));
-  function atualizarAlternancia() {
-    alternar.textContent = paineis.every(painel => painel.open) ? 'Recolher todos os temas' : 'Expandir todos os temas';
-  }
-  for (const painel of paineis) painel.addEventListener('toggle', atualizarAlternancia);
-  paineis[0].open = true;
-  grupos.append(...paineis);
-  atualizarDestaques();
-  const tituloTemas = elemento('div', 'flow-section-head');
-  tituloTemas.append(elemento('h2', '', 'Respostas por tema'), alternar);
-  const porTema = elemento('section', 'flow-section');
-  porTema.append(tituloTemas,
-    descricao('Abra um tema para ler suas respostas. Se quiser guardar exemplos para uma conversa, marque “Destacar” nas situações em que escolheu uma frequência.'),
-    grupos
-  );
-  const marcados = elemento('section', 'flow-highlights');
-  const tituloDestaques = elemento('div', 'flow-section-head');
-  tituloDestaques.append(elemento('h2', '', 'Meus destaques'), contagem);
-  marcados.append(tituloDestaques,
-    descricao('A impressão inclui apenas as situações destacadas e suas respostas. O navegador pode oferecer salvar em PDF. Para omitir o endereço da página ou do arquivo, desative cabeçalhos e rodapés na prévia. Apagar a sessão não exclui o PDF ou o papel que você guardou.'),
-    acoes(imprimir)
-  );
-  pagina.append(porTema, marcados,
+  pagina.append(
     elemento('h2', '', 'Outra rodada'),
-    descricao('Ao começar outra rodada, as respostas e os destaques desta serão descartados. Enquanto esta página estiver aberta, as próximas 50 situações serão diferentes das que você acabou de responder.'),
+    descricao('Ao começar outra rodada, suas respostas atuais serão descartadas. Enquanto esta página estiver aberta, as próximas 50 situações serão diferentes das que você acabou de responder.'),
     acoes(
       botao('Fazer outra rodada', () => {
         iniciarRodada(rodada.itens.map(item => item.id));
@@ -522,7 +534,6 @@ const telas = {
 };
 
 export function renderFluxo({ screen, main, go, progressVisible = true }) {
-  descartarImpressao();
   const destino = !rodada && screen !== 'comecar' ? 'comecar' : screen;
   if (destino === 'apagar' && telaAtual !== 'apagar') origemDaExclusao = telaAtual;
   telaAtual = destino;

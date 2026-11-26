@@ -4,7 +4,7 @@ import { montarDevolutiva } from '../public/devolutiva.mjs';
 import { OPCOES, responder, resumir } from '../public/motor.mjs';
 
 function prepararDados(respostasPorTema) {
-  const rodada = { itens: [], respostas: new Map(), destaques: new Set() };
+  const rodada = { itens: [], respostas: new Map() };
   const escolhas = [];
   for (const [indice, respostas] of respostasPorTema.entries()) {
     const tema = 'Tema ' + String.fromCharCode(65 + indice);

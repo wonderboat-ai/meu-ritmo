@@ -78,7 +78,10 @@ function comporPaginas(dados, leitura) {
   let y;
 
   function novaPagina() {
-    pagina = [desenharTexto('Meu ritmo', MARGEM, 805, 'forte', 12, AZUL), regra(793)];
+    pagina = {
+      conteudo: [desenharTexto('Meu ritmo', MARGEM, 805, 'forte', 12, AZUL), regra(793)],
+      links: []
+    };
     paginas.push(pagina);
     y = 768;
   }
@@ -90,7 +93,7 @@ function comporPaginas(dados, leitura) {
   }
 
   function linha(texto, tamanho, fonte, cor, passo, x = MARGEM) {
-    pagina.push(desenharTexto(texto, x, y, fonte, tamanho, cor));
+    pagina.conteudo.push(desenharTexto(texto, x, y, fonte, tamanho, cor));
     y -= passo;
   }
 
@@ -102,6 +105,15 @@ function comporPaginas(dados, leitura) {
 
   function titulo(texto) {
     linha(texto, 15, 'forte', AZUL, 22);
+  }
+
+  function linkExterno(texto, url) {
+    caber(22);
+    const direita = MARGEM + Math.ceil(larguraTexto(texto, 11, 'forte'));
+    const abaixo = y - 3;
+    pagina.links.push({ url, area: [MARGEM, abaixo, direita, y + 11] });
+    pagina.conteudo.push(`${AZUL} RG 0.55 w ${MARGEM} ${abaixo + 1} m ${direita} ${abaixo + 1} l S`);
+    linha(texto, 11, 'forte', AZUL, 18);
   }
 
   novaPagina();
@@ -150,9 +162,22 @@ function comporPaginas(dados, leitura) {
   y -= 14;
 
   const orientacao = leitura.orientacao ?? 'Se alguma situação afeta sua rotina ou você quer entendê-la melhor, leve este resumo a um psicólogo com formação em neuropsicologia ou a uma clínica com experiência em avaliação de autismo e TDAH em adultos. Pelo SUS, você pode começar pela UBS.';
-  caber(22 + quebrarLinhas(orientacao, 11, 'regular').length * 15);
-  titulo('Para levar à consulta');
+  const passos = (leitura.passos ?? []).map((passo, indice) => {
+    const rotulo = `${indice + 1}. ${passo.titulo}`;
+    const altura = quebrarLinhas(rotulo, 11, 'forte').length * 15
+      + quebrarLinhas(passo.texto, 11, 'regular', COLUNA - 6).length * 15 + 8;
+    return { rotulo, texto: passo.texto, altura };
+  });
+  caber(22 + quebrarLinhas(orientacao, 11, 'regular').length * 15 + (passos[0]?.altura ?? 0));
+  titulo(passos.length ? 'Passo a passo para buscar avaliação' : 'Para levar à consulta');
   paragrafo(orientacao);
+  for (const passo of passos) {
+    caber(passo.altura);
+    paragrafo(passo.rotulo, 11, 'forte', TINTA);
+    paragrafo(passo.texto, 11, 'regular', TINTA, 6);
+    y -= 8;
+  }
+  if (leitura.susUrl) linkExterno('Como buscar atendimento pelo SUS', leitura.susUrl);
   y -= 20;
 
   caber(122);
@@ -163,19 +188,18 @@ function comporPaginas(dados, leitura) {
     paragrafo(grupo.tema, 13, 'forte', TINTA);
     for (const item of grupo.itens) {
       const linhas = quebrarLinhas(item.texto, 11, 'regular', COLUNA - 6);
-      const altura = linhas.length * 15 + (item.destacado ? 38 : 26);
+      const altura = linhas.length * 15 + 26;
       if (caber(altura)) paragrafo(`${grupo.tema} (continuação)`, 13, 'forte', TINTA);
       for (const textoLinha of linhas) linha(textoLinha, 11, 'regular', TINTA, 15, MARGEM + 6);
       paragrafo(`Resposta: ${item.resposta}`, 11, 'forte', AZUL, 6);
-      if (item.destacado) paragrafo('Destaque escolhido', 9, 'regular', CINZA, 6);
       y -= 11;
     }
   }
 
-  return paginas.map((conteudo, i) => {
+  return paginas.map(({ conteudo, links }, i) => {
     const rodape = `Página ${i + 1} de ${paginas.length}`;
     conteudo.push(regra(45), desenharTexto(rodape, MARGEM, 30, 'regular', 9, CINZA));
-    return conteudo.join('\n') + '\n';
+    return { conteudo: conteudo.join('\n') + '\n', links };
   });
 }
 
@@ -189,13 +213,20 @@ export function gerarRelatorio(dados, leitura = {}) {
     '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>',
     '<< /Title (Meu ritmo - Meu resumo para consulta) >>'
   ];
-  for (const conteudo of paginas) {
+  const anotacoes = [];
+  for (const { conteudo, links } of paginas) {
     const numeroConteudo = objetos.length + 2;
+    const referenciasLinks = links.map(({ url, area }) => {
+      anotacoes.push(`<< /Type /Annot /Subtype /Link /Rect [${area.join(' ')}] /Border [0 0 0] /A << /S /URI /URI ${literalPDF(url)} >> >>`);
+      return `${5 + paginas.length * 2 + anotacoes.length} 0 R`;
+    });
+    const linksDaPagina = referenciasLinks.length ? ` /Annots [${referenciasLinks.join(' ')}]` : '';
     objetos.push(
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${LARGURA} ${ALTURA}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${numeroConteudo} 0 R >>`,
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${LARGURA} ${ALTURA}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${numeroConteudo} 0 R${linksDaPagina} >>`,
       `<< /Length ${conteudo.length} >>\nstream\n${conteudo}endstream`
     );
   }
+  objetos.push(...anotacoes);
   // Os caracteres fora de ASCII já foram escapados, então as posições são offsets em bytes.
   let pdf = '%PDF-1.4\n';
   const referencias = ['0000000000 65535 f \n'];

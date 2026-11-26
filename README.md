@@ -1,4 +1,4 @@
-# Meu ritmo · versão 2.3
+# Meu ritmo · versão 2.4
 
 Um questionário sobre o seu cotidiano. Uma pessoa adulta pode recordar as últimas quatro semanas, responder a 50 situações e baixar a devolutiva e todas as respostas em PDF com um clique.
 
@@ -10,7 +10,9 @@ Para usar offline, baixe o ZIP do repositório, extraia os arquivos e abra **ind
 
 O conteúdo educativo e os ajustes de leitura estão disponíveis para qualquer idade. A rodada pede apenas a confirmação “Tenho 18 anos ou mais”. O banco é autoral e não foi validado para rastrear ou diagnosticar autismo ou TDAH. AQ de adultos e ASRS-v1.1 de seis itens têm descrições e links oficiais na página informativa.
 
-O resumo ordena temas pela proporção de “Muitas vezes” e “Quase sempre ou sempre” entre as respostas com frequência. A tela mostra o numerador e o denominador, conserva os empates e apresenta à parte temas com base insuficiente ou sem essas respostas. O resumo já mostra até dois exemplos da rodada e explica o que o questionário permite interpretar. O botão **Baixar PDF completo** leva essa mesma devolutiva ao arquivo, junto com todas as perguntas e as escolhas literais. **Imprimir meus destaques** permite levar apenas exemplos selecionados. O PDF é gerado no próprio dispositivo.
+A jornada tem cinco etapas de dez perguntas. Os marcos mostram a etapa atual e as concluídas. A pessoa pode ocultar os marcos e a barra de progresso nos ajustes de leitura. Ao final, cada tema do mapa pode ser aberto para conferir as perguntas, suas respostas e a frequência relatada. O mapa mostra quantos temas foram explorados neste resumo.
+
+O ranking ordena temas pela proporção de “Muitas vezes” e “Quase sempre ou sempre” entre as respostas com frequência. A tela mostra a proporção em forma de contagem, conserva os empates e permite alternar entre os temas com posição e todos os temas. O botão **Baixar PDF completo** leva ao arquivo o ranking, as 50 perguntas e respostas, exemplos e um guia de quatro passos para procurar avaliação especializada. O PDF é gerado no próprio dispositivo.
 
 A rede neural em 3D fica parada até a pessoa escolher interagir. Em **Explorar**, é possível girar a rede, mudar o ângulo e enviar um pulso de luz. **Desacelerar** apresenta menos conexões e luz mais suave. A interação aceita mouse, toque, botões e teclado. Com o foco no desenho, as setas controlam a rotação e a inclinação. A tecla Home restaura a posição.
 
@@ -27,7 +29,7 @@ npm start
 
 Abra [a página local](http://127.0.0.1:4173/). Para parar o servidor, pressione Ctrl+C. Outra porta pode ser escolhida com `npm start -- --port=4174`.
 
-Para executar os testes de interface, impressão local e acessibilidade no Chromium, use um terminal na mesma pasta.
+Para executar os testes de interface, download do PDF e acessibilidade no Chromium, use um terminal na mesma pasta.
 
 ```sh
 npm install
@@ -57,18 +59,18 @@ npm run pages
 1. Revise os destinos das fontes e o contato do responsável em `public/informacao.mjs`. Para o projeto original, o canal de problemas técnicos é público. Ao receber contribuições, mantenha respostas ao questionário e relatos de saúde fora das mensagens. [Canal do projeto](https://github.com/wonderboat-ai/meu-ritmo/issues)
 2. Confira a política e a retenção de registros da hospedagem. O GitHub Pages registra o IP da visita para segurança, inclusive sem login. Em outro provedor, atualize a explicação de privacidade e confira se há scripts de métricas ou de terceiros adicionados à página. [Coleta de dados do GitHub Pages](https://docs.github.com/pt/pages/getting-started-with-github-pages/what-is-github-pages#data-collection) · [Declaração de privacidade do GitHub](https://docs.github.com/pt/site-policy/privacy-policies/github-general-privacy-statement)
 3. Rode os testes e gere `index.html` com `npm run pages`. No repositório `wonderboat-ai/meu-ritmo`, o destino de publicação é a raiz da branch `main`. Em **Settings → Pages → Build and deployment**, use **Deploy from a branch → main → / (root)**. Ao enviar a alteração aprovada para essa branch, inclua os arquivos-fonte atualizados e o `index.html` gerado. [Repositório](https://github.com/wonderboat-ai/meu-ritmo) · [Documentação de publicação do GitHub Pages](https://docs.github.com/pt/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
-4. Quando o GitHub concluir a implantação, abra o endereço HTTPS indicado em **Settings → Pages**. Faça uma rodada com respostas fictícias, revise, destaque, confira a prévia de impressão e apague. Em **Rede**, confira que responder não gera requisições. Em outro provedor, basta servir o `index.html` gerado como página de entrada. Para manter a edição modular, publique todo o conteúdo de `public/`, preservando nomes, UTF-8 e o tipo MIME JavaScript dos módulos `.mjs`.
+4. Quando o GitHub concluir a implantação, abra o endereço HTTPS indicado em **Settings → Pages**. Faça uma rodada com respostas fictícias, explore o mapa, baixe o PDF e apague a rodada. Em **Rede**, confira que responder e baixar o arquivo não geram requisições. Em outro provedor, basta servir o `index.html` gerado como página de entrada. Para manter a edição modular, publique todo o conteúdo de `public/`, preservando nomes, UTF-8 e o tipo MIME JavaScript dos módulos `.mjs`.
 
 ## Onde alterar
 
 | Caminho | Conteúdo |
 | --- | --- |
 | `public/banco-v1.txt` | Banco canônico versionado com 120 linhas. |
-| `public/motor.mjs` e `public/fluxo.mjs` | Sorteio, respostas, pausa, revisão, resumo e impressão dos destaques. |
+| `public/motor.mjs` e `public/fluxo.mjs` | Sorteio, respostas, jornada, pausa, revisão e resumo. |
 | `public/devolutiva.mjs` e `public/relatorio.mjs` | Ordenação dos temas por frequência e exportação local em PDF. |
 | `public/informacao.mjs` | Textos educativos, fontes oficiais, privacidade e contato público. |
 | `public/atelier.mjs`, `public/constelacao.mjs` e `public/atelier.css` | Controles, desenho da rede neural em perspectiva e estilos da experiência 3D. |
-| `public/index.html`, `public/app.mjs`, `public/estilo.css` e `public/rodada.css` | Entrada, navegação, temas, legibilidade e impressão. |
+| `public/index.html`, `public/app.mjs` e as folhas de estilo em `public/` | Entrada, navegação, temas, marcos das etapas e mapa. |
 | `scripts/` e `tests/` | Servidor, geração dos dois arquivos de distribuição e testes. |
 
-A rodada e os destaques ficam na memória da página. Pausar os preserva enquanto a aba está aberta. Atualizar, fechar a aba ou confirmar **Apagar e sair** descarta o progresso. PDFs e impressões que a pessoa decidir guardar permanecem sob o controle dela.
+A rodada fica na memória da página. Pausar a preserva enquanto a aba está aberta. Atualizar, fechar a aba ou confirmar **Apagar e sair** descarta o progresso. PDFs que a pessoa decidir guardar permanecem sob o controle dela.

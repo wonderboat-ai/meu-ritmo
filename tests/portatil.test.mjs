@@ -41,6 +41,7 @@ test('HTML portátil completa uma rodada offline, sem arquivos auxiliares ou ser
   await botao('Mostrar objeto 3D').click();
   assert.equal(await objeto.isVisible(), true);
   await botao('Começar').click();
+  assert.equal(await page.locator('main [data-jornada]').isVisible(), true);
   await page.getByRole('checkbox', { name: 'Tenho 18 anos ou mais' }).check();
   await botao('Iniciar questionário').click();
   for (let indice = 0; indice < 50; indice++) {
@@ -49,6 +50,7 @@ test('HTML portátil completa uma rodada offline, sem arquivos auxiliares ou ser
     await botao(indice === 49 ? 'Ver meu resumo' : 'Continuar').click();
   }
   assert.equal(await page.locator('[data-total="frequencias"]').innerText(), '50');
+  assert.equal(await page.getByText('Jornada concluída', { exact: true }).isVisible(), true);
   const [download] = await Promise.all([
     page.waitForEvent('download'),
     botao('Baixar PDF completo').click()
@@ -57,10 +59,12 @@ test('HTML portátil completa uma rodada offline, sem arquivos auxiliares ou ser
   const pdf = await readFile(await download.path(), 'latin1');
   assert.match(pdf, /^%PDF-1\./);
   assert.match(pdf, /%%EOF\s*$/);
-  await botao('Expandir todos os temas').click();
-  const destaques = page.getByRole('main').getByRole('checkbox');
-  assert.equal(await destaques.count(), 50);
-  await destaques.first().check();
+  await botao('Todos os temas').click();
+  const temas = page.locator('section.mapa-resultado .mapa-tema:visible');
+  assert.equal(await temas.count(), 12);
+  await temas.first().locator('.mapa-tema-botao').click();
+  assert.equal(await temas.first().locator('.mapa-detalhe').isVisible(), true);
+  assert.equal(await page.getByRole('main').getByRole('checkbox').count(), 0);
   await botao('Revisar respostas').click();
   await botao(/^Editar pergunta 50:/).click();
   await botao('Ver meu resumo').click();

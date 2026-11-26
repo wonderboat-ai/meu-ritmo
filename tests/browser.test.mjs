@@ -138,6 +138,16 @@ async function noOverflow(page) {
   assert.deepEqual(clipped, [], 'Sem rolagem horizontal interna no conteúdo ou nos ajustes');
 }
 
+async function checkJourney(page, current) {
+  const stages = page.locator('main [data-jornada] [data-etapa]');
+  assert.equal(await stages.count(), 5);
+  for (let stage = 0; stage < 5; stage++) {
+    const state = stage < current ? 'complete' : stage === current ? 'current' : 'upcoming';
+    assert.equal(await stages.nth(stage).getAttribute('data-state'), state);
+    assert.equal(await stages.nth(stage).getAttribute('aria-current'), stage === current ? 'step' : null);
+  }
+}
+
 // Mede as cores efetivamente aplicadas às superfícies sólidas do formulário.
 async function checkContrast(page) {
   const failures = await page.evaluate(() => {
@@ -261,10 +271,12 @@ test('entrada livre, confirmação de idade, sete fontes e privacidade de links'
 test('teclado, grupo rotulado, avanço em branco, volta, pausa e recarga com armazenamento bloqueado', async t => {
   const { page, trace } = await open(t, { blocked: true });
   await showEntry(page);
+  assert.equal(await page.locator('main [data-jornada]').isVisible(), true);
   await selectOnlyByKeyboard(page, agreement(page));
   await page.keyboard.press('Space');
   await selectOnlyByKeyboard(page, button(page, 'Iniciar questionário'));
   await page.keyboard.press('Enter');
+  await checkJourney(page, 0);
   const first = await legend(page).innerText();
   assert.equal(await page.getByRole('group', { name: first, exact: true }).count(), 1);
   assert.equal(await page.getByRole('radio').count(), 6);
@@ -306,6 +318,24 @@ test('teclado, grupo rotulado, avanço em branco, volta, pausa e recarga com arm
   await page.keyboard.press('Enter');
   assert.equal(await legend(page).innerText(), first);
   assert.equal(await radio(page, 'Às vezes').isChecked(), true);
+  await advance(page).click();
+  for (let position = 2; position < 10; position++) {
+    await radio(page, 'Prefiro pular').check();
+    await advance(page).click();
+  }
+  assert.equal(await page.getByRole('heading', { name: 'Pergunta 10 de 50', exact: true }).isVisible(), true);
+  await checkJourney(page, 0);
+  await radio(page, 'Não vivi essa situação').check();
+  await advance(page).click();
+  const nextCheckpoint = page.getByRole('heading', { name: 'Pergunta 11 de 50', exact: true });
+  assert.equal(await nextCheckpoint.isVisible(), true);
+  assert.equal(await nextCheckpoint.evaluate(el => document.activeElement === el), true);
+  await checkJourney(page, 1);
+  await button(page, 'Voltar').click();
+  assert.equal(await radio(page, 'Não vivi essa situação').isChecked(), true);
+  await checkJourney(page, 0);
+  await advance(page).click();
+  await checkJourney(page, 1);
   await page.reload({ waitUntil: 'networkidle' });
   await showEntry(page);
   assert.equal(await agreement(page).isChecked(), false);
@@ -559,6 +589,7 @@ test('leitura do sistema, temas manuais, foco no retorno, texto ampliado e reflo
     assert.equal(await radio(page, 'Muitas vezes').isChecked(), true);
     assert.match(await page.getByRole('main').innerText(), /Pergunta 1 de 50/);
     assert.equal(await page.locator('progress:visible, [role=progressbar]:visible').count(), 0);
+    assert.equal(await page.locator('main [data-jornada]').isVisible(), false);
     for (const label of options) {
       const box = await radio(page, label).evaluate(input => {
         const rect = input.labels[0].getBoundingClientRect();
@@ -626,6 +657,7 @@ async function checkRanking(page, questionsAnswered, answerAt) {
 
 const examplesHeading = 'Exemplos para levar à consulta';
 const screeningLimitsHeading = 'Sobre traços de autismo e sinais de TDAH';
+const guideHeading = 'Passo a passo para buscar avaliação';
 
 async function checkExamples(page, questionsAnswered, answerAt) {
   const heading = page.getByRole('heading', { name: examplesHeading, exact: true });
@@ -678,6 +710,14 @@ async function checkCompletePdf(page, questionsAnswered, answerAt, examples) {
   const preview = content.slice(0, content.indexOf('Respostas por tema'));
   assert(preview.includes(examplesHeading), 'Os exemplos aparecem antes da lista completa');
   assert(preview.includes(screeningLimitsHeading));
+  assert(preview.includes(guideHeading), 'As orientações para avaliação acompanham o PDF');
+  assert.match(preview, /\bUBS\b/);
+  const passos = await page.locator('.guia-passos > li strong').allTextContents();
+  assert.equal(passos.length, 4);
+  for (const [index, passo] of passos.entries()) {
+    assert(preview.includes(`${index + 1}. ${passo}`), 'O PDF inclui este passo: ' + passo);
+  }
+  assert.match(document, /\/Subtype \/Link[\s\S]*\/URI \(https:\/\/www\.gov\.br\//);
   assert.match(preview, /não (?:foram|foi) validad[oa]s?/i);
   for (const { question, answer } of examples) {
     assert(preview.includes(question + ' Resposta: ' + answer), 'O PDF preserva o exemplo da tela');
@@ -701,6 +741,9 @@ for (const [label, counts] of [
     assert.equal(await button(page, 'Revisar respostas').isVisible(), true);
     assert.equal(await button(page, 'Baixar PDF completo').isEnabled(), true);
     assert.equal(await rankingRows(page).count(), 0);
+    const mapa = page.locator('section.mapa-resultado');
+    assert.equal(await mapa.getByRole('button', { name: 'Ranking por frequência', exact: true }).isDisabled(), true);
+    assert.equal(await mapa.locator('.mapa-tema:visible').count(), 12);
     const heading = page.getByRole('heading', { name: examplesHeading, exact: true });
     assert.equal(await heading.isVisible(), true);
     assert.equal(await page.locator('section').filter({ has: heading }).last().getByRole('listitem').count(), 0);
@@ -709,7 +752,7 @@ for (const [label, counts] of [
   });
 }
 
-test('resultado misto, ranking, PDF completo, destaque, revisão, nova rodada e exclusão', async t => {
+test('resultado misto, mapa interativo, guia no PDF, revisão, nova rodada e exclusão', async t => {
   const { page, context, trace } = await open(t, { viewport: { width: 320, height: 640 } });
   const mutations = [];
   const cdp = await context.newCDPSession(page);
@@ -724,37 +767,53 @@ test('resultado misto, ranking, PDF completo, destaque, revisão, nova rodada e 
   const firstRound = await answerRound(page, firstAnswer);
   // As posições 1–48 completam oito ciclos, 49–50 são frequências.
   assert.deepEqual(await summaryCounts(page), [34, 8, 8]);
+  assert.equal(await page.getByText('Jornada concluída', { exact: true }).isVisible(), true);
+  assert.equal(await page.getByRole('heading', { name: guideHeading, exact: true }).isVisible(), true);
+  assert.equal(await page.locator('.flow-consulta .guia-passos > li').count(), 4);
   assert.equal(await page.getByRole('heading', { name: 'O que apareceu com mais frequência' }).isVisible(), true);
   assert.equal(await page.getByText(/16 das 34 situações com frequência informada/).isVisible(), true);
   assert.equal(await page.getByRole('heading', { name: 'Preparar minha consulta' }).isVisible(), true);
   const sus = page.getByRole('link', { name: 'Como buscar atendimento pelo SUS', exact: true });
   assert.equal(new URL(await sus.getAttribute('href')).hostname, 'www.gov.br');
-  assert.equal(await page.locator('main input[type=checkbox]:checked').count(), 0);
+  assert.equal(await page.locator('main input[type=checkbox]').count(), 0);
   await checkRanking(page, firstRound, firstAnswer);
   const originalExamples = await checkExamples(page, firstRound, firstAnswer);
   await checkCompletePdf(page, firstRound, firstAnswer, originalExamples);
-  await button(page, 'Expandir todos os temas').click();
+  const mapa = page.locator('section.mapa-resultado');
+  const todos = mapa.getByRole('button', { name: 'Todos os temas', exact: true });
+  const filtroRanking = mapa.getByRole('button', { name: 'Ranking por frequência', exact: true });
+  assert.equal(await filtroRanking.getAttribute('aria-pressed'), 'true');
+  await selectOnlyByKeyboard(page, todos);
+  await page.keyboard.press('Enter');
+  assert.equal(await todos.getAttribute('aria-pressed'), 'true');
+  assert.equal(await filtroRanking.getAttribute('aria-pressed'), 'false');
+  assert.equal(await mapa.locator('.mapa-tema:visible').count(), 12);
+  const picked = firstRound[49];
+  const tema = questions.get(picked);
+  const temaBotao = page.locator('.mapa-tema-botao').filter({ hasText: tema });
+  assert.equal(await temaBotao.getAttribute('aria-expanded'), 'false');
+  const painel = mapa.locator('.mapa-tema').filter({ has: temaBotao }).locator('.mapa-detalhe');
+  assert.equal(await temaBotao.getAttribute('aria-controls'), await painel.getAttribute('id'));
+  assert.equal(await painel.isVisible(), false);
+  await selectOnlyByKeyboard(page, temaBotao);
+  await page.keyboard.press('Space');
+  assert.equal(await temaBotao.getAttribute('aria-expanded'), 'true');
+  assert.equal(await temaBotao.evaluate(el => document.activeElement === el), true);
+  assert.equal(await painel.getByText(picked, { exact: true }).isVisible(), true);
+  for (const [index, pergunta] of firstRound.entries()) {
+    if (questions.get(pergunta) !== tema) continue;
+    const linha = painel.locator('.flow-item').filter({ has: page.getByText(pergunta, { exact: true }) });
+    assert.equal(await linha.getByText(firstAnswer(index), { exact: true }).isVisible(), true);
+  }
   await cdp.send('Page.setFontSizes', { fontSizes: { standard: 32 } });
   await noOverflow(page);
   await cdp.send('Page.setFontSizes', { fontSizes: { standard: 16 } });
-  const picked = firstRound[49];
-  const highlight = page.getByRole('checkbox', { name: 'Destacar: ' + picked, exact: true });
-  await highlight.check();
-  assert.equal(await highlight.isChecked(), true);
-  await highlight.uncheck();
-  assert.equal(await button(page, 'Imprimir meus destaques').isDisabled(), true);
-  await highlight.check();
-  // Intercepta somente a caixa de impressão do sistema. O DOM e o CSS usados são os da aplicação.
-  await page.evaluate(() => { window.print = () => { window.__impressoesDeTeste = (window.__impressoesDeTeste || 0) + 1; }; });
-  await button(page, 'Imprimir meus destaques').click();
-  assert.equal(await page.evaluate(() => window.__impressoesDeTeste), 1);
-  await page.emulateMedia({ media: 'print' });
-  const printable = await page.locator('body').innerText();
-  assert(printable.includes(picked));
-  assert(printable.includes('Nunca'));
-  assert(firstRound.every(text => text === picked || !printable.includes(text)), 'A impressão omite todos os demais enunciados');
-  assert(!printable.includes('Revisar respostas'));
-  await page.emulateMedia({ media: 'screen' });
+  await temaBotao.press('Enter');
+  assert.equal(await temaBotao.getAttribute('aria-expanded'), 'false');
+  assert.equal(await painel.isVisible(), false);
+  await filtroRanking.click();
+  assert.equal(await mapa.locator('.mapa-tema:visible').count(), await rankingRows(page).count());
+  await checkRanking(page, firstRound, firstAnswer);
   await button(page, 'Revisar respostas').click();
   await noOverflow(page);
   await button(page, /^Editar pergunta 50:/).click();
@@ -763,7 +822,6 @@ test('resultado misto, ranking, PDF completo, destaque, revisão, nova rodada e 
   await radio(page, 'Não vivi essa situação').check();
   await button(page, 'Ver meu resumo').click();
   assert.deepEqual(await summaryCounts(page), [33, 9, 8]);
-  assert.equal(await button(page, 'Imprimir meus destaques').isDisabled(), true);
   const editedAnswer = i => i === 49 ? 'Não vivi essa situação' : firstAnswer(i);
   await checkRanking(page, firstRound, editedAnswer);
   const editedExamples = await checkExamples(page, firstRound, editedAnswer);
@@ -777,7 +835,7 @@ test('resultado misto, ranking, PDF completo, destaque, revisão, nova rodada e 
   await showEntry(page);
   assert.equal(await agreement(page).isChecked(), false);
   assert.equal(await page.getByRole('radio').count(), 0);
-  assert.deepEqual(trace.requests.slice(beforeRequests), [], 'Responder, revisar, exportar, imprimir, ressorteio e exclusão sem requisições');
+  assert.deepEqual(trace.requests.slice(beforeRequests), [], 'Responder, explorar o mapa, revisar, exportar, ressorteio e exclusão sem requisições');
   assert.equal(await page.evaluate(() => history.length), history);
   assert.equal(page.url(), origin + '/');
   assert.deepEqual(mutations, [], 'Sem escrita transitória em Web Storage');

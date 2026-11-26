@@ -99,43 +99,23 @@
 }
 .flow-counts dt, .flow-page .flow-subtle {color: var(--soft); font-size: .92rem}
 .flow-section {margin-block: 2rem 1.5rem; border-top: 1px solid var(--line); padding-top: 1.45rem}
-.flow-section-head {display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .25rem 1rem; margin-bottom: .65rem}
-.flow-section-head h2, .flow-section-head .flow-subtle {margin: 0}
 .flow-devolutiva > h2, .flow-exemplos-consulta > h2, .flow-consulta > h2:first-child {margin-top: 0}
-.flow-ranking, .flow-exemplos {list-style: none; margin: .75rem 0 1.05rem; padding: 0}
-.flow-ranking {
-  border: 1px solid var(--line); border-radius: .6rem; background: var(--paper);
-}
-.flow-rank-row {
-  display: grid; grid-template-columns: minmax(0, 1fr) auto;
-  column-gap: .7rem; row-gap: .2rem; align-items: baseline; padding: .7rem .9rem;
-}
-.flow-ranking[data-ranking] > li {grid-template-columns: auto minmax(0, 1fr) auto}
-.flow-rank-row + .flow-rank-row, .flow-exemplos li + li {border-top: 1px solid var(--line)}
-.flow-rank-position, .flow-rank-count {color: var(--accent); font-weight: 660; font-variant-numeric: tabular-nums}
-.flow-rank-position {min-width: 1.45em}
-.flow-rank-detail {grid-column: 1 / -1; color: var(--soft); font-size: .88rem}
+.flow-exemplos {list-style: none; margin: .75rem 0 1.05rem; padding: 0}
+.flow-exemplos li + li {border-top: 1px solid var(--line)}
 .flow-exemplos li {padding-block: .6rem}
 .flow-exemplos li p {margin: 0 0 .2rem}
 .flow-exemplos strong {color: var(--accent)}
 .flow-consulta .flow-actions > a {display: inline-flex; align-items: center; min-height: 44px; min-width: 44px}
-.flow-groups {display: grid; grid-template-columns: minmax(0,1fr); gap: .48rem; margin: 1rem 0 0}
-.flow-page .flow-group {min-width: 0; border: 1px solid var(--line); border-radius: .6rem; background: var(--paper)}
-.flow-group > summary {padding: .86rem 1rem; color: var(--ink); font-weight: 650; cursor: pointer}
-.flow-group > summary::marker {color: var(--accent)}
-.flow-group[open] > summary {border-bottom: 1px solid var(--line); border-radius: .6rem .6rem 0 0}
-.flow-group .flow-group-total {display: inline-block; margin-inline-start: .65rem; font-size: .86rem; font-weight: 450; color: var(--soft)}
-.flow-page .flow-group > p {margin: .75rem 1rem}
 .flow-page ul.flow-list {list-style: none; margin: 0; padding: 0 1rem}
 .flow-item {border-top: 1px solid var(--line); padding-block: .85rem}
 .flow-item .flow-item-question {margin: 0 0 .18rem}
 .flow-item .flow-answer {font-weight: 650; color: var(--accent); margin-bottom: .22rem}
 .flow-item .flow-check {font-size: .93rem}
-.flow-highlights {
+.flow-consulta {
   border: 1px solid var(--line); border-inline-start: 3px solid var(--accent);
   padding: clamp(.9rem, 2.4vw, 1.5rem); border-radius: .5rem; background: var(--paper); margin: 1.6rem 0;
 }
-.flow-highlights .flow-actions {margin-bottom: 0}
+.flow-consulta .flow-actions {margin-bottom: 0}
 .flow-revisao ol {padding-inline-start: 1.75rem; margin-block: 1rem}
 .flow-revisao li::marker {color: var(--accent); font-weight: 650}
 .flow-revisao .flow-item > button {margin-top: .2rem}
@@ -154,13 +134,9 @@
   .flow-counts > div {flex-direction: row-reverse; align-items: baseline; justify-content: flex-end; gap: .75rem}
   .flow-counts > div + div {border: 0; border-top: 1px solid var(--line)}
   .flow-counts dd {min-inline-size: 1.35em}
-  .flow-group .flow-group-total {display: block; margin: .18rem 0 0}
-  .flow-rank-row, .flow-ranking[data-ranking] > li {grid-template-columns: minmax(0, 1fr)}
-  .flow-ranking[data-ranking] > li {grid-template-columns: auto minmax(0, 1fr)}
-  .flow-rank-count {grid-column: 1 / -1}
 }
 @media (forced-colors: active) {
   .flow-page .flow-progress {appearance: auto}
-  .flow-page .answer-row, .flow-page .flow-group, .flow-page .flow-highlights {border: 1px solid ButtonText}
+  .flow-page .answer-row, .flow-page .flow-consulta {border: 1px solid ButtonText}
   .flow-page .answer-row:has(:checked) {border: 2px solid Highlight}
 }

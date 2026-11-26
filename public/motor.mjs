@@ -8,7 +8,6 @@ export const OPCOES = Object.freeze([
   "Prefiro pular",
 ]);
 
-const frequencias = new Set(OPCOES.slice(0, 4));
 const [naoVivida, pulo] = OPCOES.slice(4);
 
 export function lerBanco(conteudo) {
@@ -85,7 +84,7 @@ export function criarRodada(banco, idsAnteriores = [], aleatorio) {
     }
     for (const tema of ordem) itens.push(porTema.get(tema)[volta]);
   }
-  return { itens: Object.freeze(itens), respostas: new Map(), destaques: new Set() };
+  return { itens: Object.freeze(itens), respostas: new Map() };
 }
 
 function exigirItem(rodada, id) {
@@ -96,13 +95,6 @@ export function responder(rodada, id, opcao) {
   exigirItem(rodada, id);
   if (!OPCOES.includes(opcao)) throw new Error("Escolha uma das seis respostas disponíveis.");
   rodada.respostas.set(id, opcao);
-  if (!frequencias.has(opcao)) rodada.destaques.delete(id);
-}
-
-export function destacar(rodada, id, ativo) {
-  exigirItem(rodada, id);
-  if (ativo && frequencias.has(rodada.respostas.get(id))) rodada.destaques.add(id);
-  else rodada.destaques.delete(id);
 }
 
 function contagemVazia() {
@@ -127,7 +119,7 @@ export function resumir(rodada) {
     grupo[categoria]++;
     totais.total++;
     grupo.total++;
-    grupo.itens.push({ ...item, resposta, destacado: rodada.destaques.has(id) });
+    grupo.itens.push({ ...item, resposta });
   }
   return { ...totais, temas: [...grupos.values()] };
 }

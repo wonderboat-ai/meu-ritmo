@@ -5,6 +5,13 @@ const minimoParaOrdenar = 2;
 const ordemFrequencia = [...maisFrequentes].reverse();
 
 export const ORIENTACAO_CONSULTA = 'Se essas situações afetam sua rotina ou você quer entendê-las melhor, leve o resumo a um psicólogo com formação em neuropsicologia ou a uma clínica com experiência em avaliação de autismo e TDAH em adultos. Pelo SUS, você pode começar pela UBS.';
+export const URL_SUS = 'https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/a/autismo/atencao-especializada';
+export const PASSOS_CONSULTA = [
+  { titulo: 'Escolha dois ou três exemplos', texto: 'Pense numa situação que afeta sua rotina, em outra que se repete e, se puder, em algo que já ajuda. Anote o que aconteceu e em que contexto.' },
+  { titulo: 'Relembre desde quando isso acontece', texto: 'Anote o que percebeu na infância e o que acontece hoje em casa, no trabalho, nos estudos ou em outras situações. Relate o impacto na rotina e o que muda de um ambiente para outro.' },
+  { titulo: 'Procure avaliação para adultos', texto: 'Entre em contato com um psicólogo com formação em neuropsicologia ou com uma clínica especializada em autismo e TDAH em adultos. Pergunte como funciona a primeira consulta. Pelo SUS, comece pela Unidade Básica de Saúde e peça orientação sobre encaminhamento.' },
+  { titulo: 'Leve seu PDF e suas perguntas', texto: 'Mostre as respostas que ajudam a explicar sua dúvida. Pergunte o que o profissional precisa investigar, quais são os próximos passos e que tipo de apoio faz sentido para sua rotina.' }
+];
 
 function compararProporcao(a, b) {
   return b.recorrentes * a.frequencias - a.recorrentes * b.frequencias;

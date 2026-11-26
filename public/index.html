@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="./estilo.css">
   <link rel="stylesheet" href="./atelier.css">
   <link rel="stylesheet" href="./rodada.css">
+  <link rel="stylesheet" href="./jornada.css">
   <script type="module" src="./app.mjs"></script>
 </head>
 <body>
@@ -37,7 +38,7 @@
         <div class="hero-copy">
           <p class="eyebrow">Autismo e TDAH na vida adulta</p>
           <h1 id="titulo-inicio" data-page-focus tabindex="-1">Seu cotidiano,<br><em>no seu ritmo.</em></h1>
-          <p class="hero-description">Como foram as últimas quatro semanas para você? Explore 50 situações de conversa, atenção e rotina. Veja suas respostas por tema e escolha o que levar para uma conversa.</p>
+          <p class="hero-description">Como foram as últimas quatro semanas para você? Percorra cinco etapas e, no fim, explore um mapa das suas respostas e o que levar para uma conversa.</p>
           <div class="hero-actions">
             <button class="button-primary start" data-start>Começar</button>
             <button class="text-button explore" data-go="sobre">Explorar o conteúdo informativo</button>
@@ -51,8 +52,8 @@
       <section class="how" aria-labelledby="como-funciona">
         <h2 id="como-funciona">Como funciona</h2>
         <ul class="overview">
-          <li><span class="icon-tile" data-icon="pages" aria-hidden="true"></span><div><strong>Uma situação por vez</strong><span>Responda, volte ou pule. Você decide quando avançar.</span></div></li>
-          <li><span class="icon-tile" data-icon="grid" aria-hidden="true"></span><div><strong>Um resumo por tema</strong><span>Releia suas escolhas nos 12 temas e marque seus destaques.</span></div></li>
+          <li><span class="icon-tile" data-icon="pages" aria-hidden="true"></span><div><strong>Cinco etapas</strong><span>Uma situação por vez. Responda, volte ou pule no seu ritmo.</span></div></li>
+          <li><span class="icon-tile" data-icon="grid" aria-hidden="true"></span><div><strong>Mapa das respostas</strong><span>Explore os 12 temas e baixe o PDF com o guia para consulta.</span></div></li>
           <li><span class="icon-tile" data-icon="pause" aria-hidden="true"></span><div><strong>Espaço para pausar</strong><span>Continue do mesmo ponto enquanto esta aba estiver aberta.</span></div></li>
         </ul>
       </section>
@@ -98,7 +99,7 @@
         <label><input type="radio" name="espacamento" value="amplo"> Amplo</label>
       </div></fieldset>
       <label class="check-pref"><input type="checkbox" id="barra" checked> Mostrar barra de progresso</label>
-      <p class="hint">O número da pergunta fica sempre visível.</p>
+      <p class="hint">A barra e os marcos da jornada podem ser ocultados. O número da pergunta fica sempre visível.</p>
     </div>
     <div class="dialog-foot"><button class="button-secondary" id="restaurar">Restaurar leitura padrão</button>
       <button class="button-primary" data-close>Concluir ajustes</button></div>

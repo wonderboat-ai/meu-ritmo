@@ -57,17 +57,16 @@ export const htmlPrivacidade = `
   <p>Você pode usar o Meu ritmo sem cadastro. Para entrar no questionário, basta confirmar que tem 18 anos ou mais.</p>
   <section>
     <h2>Enquanto a aba está aberta</h2>
-    <p>As perguntas sorteadas, suas respostas e seus destaques ficam na memória desta página. O próprio navegador monta o resumo. Suas escolhas ficam fora do endereço da página e dos registros e estatísticas do site.</p>
+    <p>As perguntas sorteadas e suas respostas ficam na memória desta página. O próprio navegador monta o resumo. Suas escolhas ficam fora do endereço da página e dos registros e estatísticas do site.</p>
     <p>Ao pausar, a pergunta fica oculta. Você pode retomar do mesmo ponto enquanto mantiver esta aba aberta. Fechar ou atualizar a página apaga o progresso. Para encerrar antes, escolha “Apagar e sair” e confirme.</p>
   </section>
   <section>
-    <h2>Se você decidir baixar ou imprimir</h2>
+    <h2>Se você decidir baixar o PDF</h2>
     <p>“Baixar PDF completo” cria um arquivo com as 50 perguntas, as suas respostas e a devolutiva neste dispositivo. Você escolhe onde guardar o arquivo e com quem compartilhar. Apagar a sessão não exclui o arquivo salvo.</p>
-    <p>“Imprimir meus destaques” envia para a janela de impressão apenas as situações e respostas que você destacou. O navegador também pode oferecer a opção de salvar em PDF. Você controla essas cópias. Apagar a sessão não exclui um PDF já salvo ou uma impressão em papel.</p>
   </section>
   <section>
     <h2>Ao visitar este site ou abrir uma fonte</h2>
-    <p>Para entregar a página e seus arquivos, o provedor de hospedagem pode registrar informações técnicas da visita, como o endereço IP, o horário e o arquivo solicitado. O que é guardado e por quanto tempo depende do provedor. O questionário não envia suas respostas, seus destaques nem seu resumo à hospedagem ou a serviços de IA.</p>
+    <p>Para entregar a página e seus arquivos, o provedor de hospedagem pode registrar informações técnicas da visita, como o endereço IP, o horário e o arquivo solicitado. O que é guardado e por quanto tempo depende do provedor. O questionário não envia suas respostas nem seu resumo à hospedagem ou a serviços de IA.</p>
     <p>Se você acessar o Meu ritmo pelo GitHub Pages, o GitHub registra e guarda o endereço IP da visita para fins de segurança, mesmo quando você está sem login. Abrindo o arquivo HTML diretamente no seu dispositivo, o questionário funciona sem conexão com a hospedagem.</p>
     <p>Os links abaixo abrem em outra aba, se você os escolher. Cada destino recebe a visita segundo sua própria política. O Meu ritmo omite o endereço da página de origem ao abrir links externos.</p>
     <ul class="source-list">

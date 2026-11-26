@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import assert from "node:assert/strict";
 import test from "node:test";
-import { OPCOES, criarRodada, destacar, lerBanco, responder, resumir } from "../public/motor.mjs";
+import { OPCOES, criarRodada, lerBanco, responder, resumir } from "../public/motor.mjs";
 
 const arquivo = await readFile(new URL("../public/banco-v1.txt", import.meta.url), "utf8");
 const banco = lerBanco(arquivo);
@@ -62,7 +62,6 @@ function verificarRodada(rodada, anteriores, contexto) {
   }
   assert.ok(rodada.itens.every((item, i, todos) => !i || item.tema !== todos[i - 1].tema), contexto);
   assert.equal(rodada.respostas.size, 0);
-  assert.equal(rodada.destaques.size, 0);
 }
 
 test("1.000 sementes × três rodadas: cotas, intercalação e exclusão integral da anterior", () => {
@@ -103,48 +102,39 @@ for (const [indice, opcao] of OPCOES.entries()) {
       for (const item of grupo.itens) {
         assert.equal(item.resposta, opcao);
         assert.equal(item.texto, banco.find(original => original.id === item.id).texto);
-        assert.equal(item.destacado, false);
       }
     }
   });
 }
 
-test("respostas mistas, substituição e destaques mantêm totais exatos e a sequência inicial", () => {
+test("respostas mistas e substituições mantêm totais exatos e a sequência inicial", () => {
   const rodada = criarRodada(banco, [], gerador(5));
   const ordem = ids(rodada);
   rodada.itens.forEach(({ id }, i) => responder(rodada, id, OPCOES[i % 6]));
   const antes = resumir(rodada);
   assert.deepEqual([antes.frequencias, antes.naoVividas, antes.pulos], [34, 8, 8]);
   const ultimo = ordem.at(-1);
-  destacar(rodada, ultimo, true);
-  destacar(rodada, ultimo, false);
-  assert.equal(rodada.destaques.size, 0);
-  destacar(rodada, ultimo, true);
-  responder(rodada, ultimo, OPCOES[0]);
-  assert.deepEqual([...rodada.destaques], [ultimo]);
-  assert.equal(resumir(rodada).temas.flatMap(t => t.itens).find(item => item.id === ultimo).destacado, true);
-  for (const especial of OPCOES.slice(4)) {
-    responder(rodada, ultimo, OPCOES[1]);
-    destacar(rodada, ultimo, true);
-    responder(rodada, ultimo, especial);
-    assert.equal(rodada.destaques.size, 0);
-    destacar(rodada, ultimo, true);
-    assert.equal(rodada.destaques.size, 0);
+  for (const [opcao, esperado] of [
+    [OPCOES[0], [34, 8, 8]],
+    [OPCOES[4], [33, 9, 8]],
+    [OPCOES[5], [33, 8, 9]],
+    [OPCOES[3], [34, 8, 8]],
+  ]) {
+    responder(rodada, ultimo, opcao);
+    const resumo = resumir(rodada);
+    assert.deepEqual([resumo.frequencias, resumo.naoVividas, resumo.pulos], esperado);
+    assert.equal(resumo.total, 50);
+    assert.equal(resumo.temas.flatMap(tema => tema.itens).find(item => item.id === ultimo).resposta, opcao);
+    assert.deepEqual(ids(rodada), ordem);
   }
-  const depois = resumir(rodada);
-  assert.deepEqual([depois.frequencias, depois.naoVividas, depois.pulos], [33, 8, 9]);
-  assert.equal(depois.total, 50);
-  assert.deepEqual(ids(rodada), ordem);
 });
 
-test("deixar em branco não gera resposta, destaque ou resumo", () => {
+test("deixar em branco não gera resposta ou resumo", () => {
   const rodada = criarRodada(banco, [], gerador(1));
   const primeiro = rodada.itens[0].id;
-  destacar(rodada, primeiro, true);
   assert.throws(() => responder(rodada, primeiro, ""));
   assert.throws(() => responder(rodada, primeiro, undefined));
   assert.throws(() => responder(rodada, "Z01", "Nunca"));
   assert.throws(() => resumir(rodada));
   assert.equal(rodada.respostas.size, 0);
-  assert.equal(rodada.destaques.size, 0);
 });
