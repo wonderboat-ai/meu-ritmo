@@ -57,6 +57,10 @@ O código foi enviado ao novo repositório público `wonderboat-ai/meu-ritmo`. O
 
 A URL pública abriu a tela “Seu cotidiano, no seu ritmo.” em um navegador. Na página hospedada, “Mais ajustes do objeto” revelou os comandos de inclinação e a opção “Cores suaves”. Após ativar essa opção, inclinar e girar, o controle anunciou 24 graus de rotação e 15 graus de inclinação. O console ficou sem avisos e erros nesse percurso. [Site em produção](https://wonderboat-ai.github.io/meu-ritmo/)
 
+Em um segundo navegador, o Chrome abriu o conteúdo informativo e a privacidade antes da confirmação de idade. Na rodada fictícia publicada, a pausa e a retomada preservaram a primeira pergunta e a alternativa escolhida. Ao completar as 50 perguntas alternando “Nunca”, “Não vivi essa situação” e “Prefiro pular”, o resumo imediato registrou **17 frequências, 17 situações não vividas e 16 pulos**. Dois temas tinham cinco itens e os outros dez tinham quatro. Marcar e desmarcar um destaque habilitou e desabilitou a impressão. A exclusão solicitou confirmação e devolveu a pessoa ao início.
+
+A implantação da aplicação auditada foi concluída com sucesso. Nesse perfil do Chrome apareceram avisos de extensão e mensagens de canal sem referência a arquivo do site. O fluxo de ponta a ponta terminou normalmente. O fluxo de publicação registrou um aviso de compatibilidade de uma ação do GitHub com a versão do Node. [Execução do GitHub Pages](https://github.com/wonderboat-ai/meu-ritmo/actions/runs/45750726716)
+
 ## Verificações com pessoas e equipamentos reais
 
 - **Leitores de tela.** Percorrer uma rodada com NVDA no Windows, VoiceOver no iPhone e TalkBack no Android. Conferir ordem e clareza dos anúncios do enunciado, posição, alternativas, erros e destaques. Ouvir a descrição da escultura e o retorno dos ajustes por teclado.
