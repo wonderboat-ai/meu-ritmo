@@ -1,0 +1,145 @@
+/* Todas as superfícies da rodada usam as mesmas cores e preferências da página. */
+.flow-page {
+  width: min(calc(100% - 2rem), 43rem);
+  margin: clamp(1.55rem, 4vw, 3.6rem) auto clamp(2rem, 5vw, 4.6rem);
+  color: var(--ink);
+}
+.flow-page, .flow-page * {overflow-wrap: anywhere}
+.flow-page > :last-child, .flow-page .flow-heading > :last-child {margin-bottom: 0}
+.flow-page .flow-heading {margin-bottom: 1.5rem}
+.flow-page h1, .flow-page h2 {text-wrap: pretty}
+.flow-page h1 {margin: 0 0 .65rem}
+.flow-lead {max-width: 56ch; color: var(--soft); margin: 0; font-size: 1.08rem}
+.flow-page .flow-note {max-width: 62ch}
+.flow-page .flow-callout, .flow-page .flow-error {
+  border: 0;
+  border-inline-start: 3px solid var(--accent);
+  border-radius: 0 .45rem .45rem 0;
+  margin-block: 1.15rem;
+  padding: .9rem 1.05rem;
+  color: var(--ink);
+  background: var(--wash);
+}
+.flow-page .flow-error {border: 2px solid var(--focus); border-radius: .45rem; font-weight: 650}
+.flow-page .flow-actions {display: flex; flex-wrap: wrap; align-items: center; gap: .65rem 1rem; margin: 1.1rem 0}
+.flow-page .flow-actions > * {max-width: 100%}
+.flow-page .flow-help {margin: 1rem 0; border: 0; border-block: 1px solid var(--line); border-radius: 0; background: transparent}
+.flow-page .flow-help summary {padding: .7rem 0; color: var(--accent); font-size: .95rem; cursor: pointer}
+.flow-page .flow-help p {margin: .25rem 0 1rem; max-width: 59ch}
+.flow-check {display: flex; align-items: center; gap: .65rem; min-height: 44px; max-width: 100%; width: fit-content; cursor: pointer}
+.flow-start {margin-block: 1.4rem}
+.flow-check input, .answer-row input {flex: none; margin: 0; width: 1rem; height: 1rem; accent-color: var(--accent)}
+.flow-start .flow-check {font-weight: 650}
+
+.flow-pergunta {max-width: 40rem}
+.flow-topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .5rem 1rem;
+  margin: 0 0 clamp(1.1rem, 2.4vw, 1.7rem);
+}
+.flow-pergunta .flow-topline h1 {
+  margin: 0; font: inherit; font-weight: 720; letter-spacing: inherit;
+  color: var(--ink); font-variant-numeric: tabular-nums;
+}
+.flow-topline .flow-meta {margin: 0; font-size: .92rem; font-weight: 550; color: var(--soft); letter-spacing: inherit}
+.flow-topline .flow-progress {
+  appearance: none; flex: 0 0 100%; display: block; width: 100%; height: .36rem;
+  border: 1px solid var(--edge); border-radius: 1rem; overflow: hidden;
+  margin: .2rem 0 0; color: var(--accent); background: var(--bg);
+}
+.flow-progress::-webkit-progress-bar {background: var(--bg)}
+.flow-progress::-webkit-progress-value {background: var(--accent)}
+.flow-progress::-moz-progress-bar {background: var(--accent)}
+.flow-page .flow-intro {font-size: 1rem; color: var(--soft); max-width: 58ch; margin: 0 0 .65rem}
+.flow-pergunta .flow-form {margin-block: 0}
+.flow-question {border: 0; min-inline-size: 0; margin: 0; padding: 0}
+.flow-question legend {
+  padding: 0; margin: 0 0 1.1rem;
+  max-inline-size: 100%; font-size: clamp(1.45rem, 2.85vw, 2.05rem); line-height: 1.25;
+  font-family: inherit; font-weight: 630; letter-spacing: -.025em; text-wrap: pretty;
+}
+.flow-pergunta .answer-options {display: grid; grid-template-columns: minmax(0,1fr); gap: .4rem}
+.flow-page .answer-row {
+  display: flex; align-items: center; flex-wrap: wrap; gap: .25rem .75rem;
+  padding: .51rem .95rem; min-height: max(44px, 2.7rem);
+  border: 1px solid var(--edge); border-radius: .48rem;
+  color: var(--ink); background: var(--paper); cursor: pointer;
+}
+.answer-text {flex: 1 1 10ch; min-width: 0}
+.flow-page .answer-row:has(:checked) {
+  border-color: var(--accent); background: var(--selection, var(--wash));
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.flow-page .answer-row:has(:focus-visible), .flow-page .flow-check:has(:focus-visible) {
+  outline: 3px solid var(--focus); outline-offset: 3px; box-shadow: 0 0 0 3px var(--bg);
+}
+.flow-page .flow-tag {margin: 0; color: var(--accent); font-size: .8rem; font-weight: 680}
+.flow-page .flow-step-controls {margin: 1rem 0 .9rem}
+.flow-step-controls > :last-child {margin-inline-start: auto}
+@media (hover: hover) {
+  .flow-page .answer-row:hover {border-color: var(--accent)}
+}
+
+.flow-counts {
+  display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
+  margin: 1.3rem 0; padding: 0;
+  border: 1px solid var(--line); border-radius: .65rem; background: var(--paper);
+}
+.flow-counts > div {
+  display: flex; flex-direction: column-reverse; justify-content: end; align-items: start;
+  gap: .4rem; min-width: 0; padding: clamp(.85rem, 2.4vw, 1.3rem);
+}
+.flow-counts > div + div {border-inline-start: 1px solid var(--line)}
+.flow-counts dd {
+  color: var(--accent); font-family: inherit; font-size: clamp(1.9rem, 3.2vw, 2.6rem);
+  font-weight: 600; letter-spacing: -.04em; line-height: 1; margin: 0; font-variant-numeric: tabular-nums;
+}
+.flow-counts dt, .flow-page .flow-subtle {color: var(--soft); font-size: .92rem}
+.flow-section {margin-block: 2rem 1.5rem; border-top: 1px solid var(--line); padding-top: 1.45rem}
+.flow-section-head {display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .25rem 1rem; margin-bottom: .65rem}
+.flow-section-head h2, .flow-section-head .flow-subtle {margin: 0}
+.flow-groups {display: grid; grid-template-columns: minmax(0,1fr); gap: .48rem; margin: 1rem 0 0}
+.flow-page .flow-group {min-width: 0; border: 1px solid var(--line); border-radius: .6rem; background: var(--paper)}
+.flow-group > summary {padding: .86rem 1rem; color: var(--ink); font-weight: 650; cursor: pointer}
+.flow-group > summary::marker {color: var(--accent)}
+.flow-group[open] > summary {border-bottom: 1px solid var(--line); border-radius: .6rem .6rem 0 0}
+.flow-group .flow-group-total {display: inline-block; margin-inline-start: .65rem; font-size: .86rem; font-weight: 450; color: var(--soft)}
+.flow-page .flow-group > p {margin: .75rem 1rem}
+.flow-page ul.flow-list {list-style: none; margin: 0; padding: 0 1rem}
+.flow-item {border-top: 1px solid var(--line); padding-block: .85rem}
+.flow-item .flow-item-question {margin: 0 0 .18rem}
+.flow-item .flow-answer {font-weight: 650; color: var(--accent); margin-bottom: .22rem}
+.flow-item .flow-check {font-size: .93rem}
+.flow-highlights {
+  border: 1px solid var(--line); border-inline-start: 3px solid var(--accent);
+  padding: clamp(.9rem, 2.4vw, 1.5rem); border-radius: .5rem; background: var(--paper); margin: 1.6rem 0;
+}
+.flow-highlights .flow-actions {margin-bottom: 0}
+.flow-revisao ol {padding-inline-start: 1.75rem; margin-block: 1rem}
+.flow-revisao li::marker {color: var(--accent); font-weight: 650}
+.flow-revisao .flow-item > button {margin-top: .2rem}
+:root[data-espacamento="amplo"] .flow-question legend {
+  line-height: 1.53; letter-spacing: var(--tracking); word-spacing: var(--word-gap);
+}
+
+@media (max-width: 32em) {
+  .flow-page {width: calc(100% - min(2rem,10vw))}
+  .flow-topline {justify-content: flex-start}
+  .flow-topline .flow-meta {flex-basis: 100%}
+  .flow-page .answer-row {padding-inline: .66rem}
+  .flow-page .answer-row:has(:checked) .flow-tag {flex-basis: 100%; padding-inline-start: 1.75rem}
+  .flow-step-controls > :last-child {margin-inline-start: 0}
+  .flow-counts {grid-template-columns: minmax(0,1fr)}
+  .flow-counts > div {flex-direction: row-reverse; align-items: baseline; justify-content: flex-end; gap: .75rem}
+  .flow-counts > div + div {border: 0; border-top: 1px solid var(--line)}
+  .flow-counts dd {min-inline-size: 1.35em}
+  .flow-group .flow-group-total {display: block; margin: .18rem 0 0}
+}
+@media (forced-colors: active) {
+  .flow-page .flow-progress {appearance: auto}
+  .flow-page .answer-row, .flow-page .flow-group, .flow-page .flow-highlights {border: 1px solid ButtonText}
+  .flow-page .answer-row:has(:checked) {border: 2px solid Highlight}
+}

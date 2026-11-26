@@ -1,0 +1,75 @@
+#atelier {
+  --atelier-ink: #243257;
+  --atelier-line: #6e7994;
+  --atelier-sky: #e9edfa;
+  --atelier-cloud: #f2f4fd;
+  --atelier-ground: #dce2f4;
+  --atelier-btn: #f8f9fe;
+  width: 100%;
+  min-width: 0;
+  color: var(--atelier-ink);
+  background: radial-gradient(ellipse at 40% 35%, var(--atelier-cloud), var(--atelier-sky) 62%, var(--atelier-ground));
+  border-radius: 1.3rem;
+  border: 1px solid color-mix(in srgb, var(--atelier-line) 45%, transparent);
+  overflow: visible;
+}
+.atelier-head, .atelier-tools {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .4rem;
+  padding: .55rem clamp(.7rem, 2vw, 1.1rem);
+}
+.atelier-head {justify-content: space-between}
+.atelier-name {font-weight: 650; font-size: .85rem; letter-spacing: .015em}
+.atelier-visor canvas {width: 100%; height: auto; aspect-ratio: 1.55; display: block}
+.atelier-visor canvas:focus-visible {outline-offset: -5px}
+.atelier-tools {padding-top: .15rem; padding-bottom: .85rem; justify-content: center}
+.atelier-extra {
+  margin: -.5rem clamp(.7rem, 2vw, 1.1rem) .3rem;
+  color: var(--atelier-ink); font-size: .8rem;
+}
+.atelier-extra summary {
+  min-height: 44px; width: fit-content; max-width: 100%; margin-inline: auto;
+  padding: .6rem .4rem; cursor: pointer; text-decoration: underline; text-underline-offset: .2em;
+}
+.atelier-extra-opcoes {
+  display: flex; flex-wrap: wrap; gap: .45rem; justify-content: center; padding-bottom: .6rem;
+}
+.atelier-extra-opcoes label {
+  display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: .4rem;
+  cursor: pointer; color: var(--atelier-ink); font-size: .8rem;
+}
+.atelier-extra-opcoes input {accent-color: var(--atelier-ink); width: 1.05rem; height: 1.05rem}
+.atelier-legenda {padding: 1rem 1.2rem; margin: 0}
+.atelier button {
+  min-height: 44px; min-width: 44px; max-width: 100%; padding: .4rem .6rem;
+  border: 1px solid var(--atelier-line); border-radius: .5rem; color: var(--atelier-ink);
+  background: var(--atelier-btn); font: inherit; font-size: .8rem;
+  line-height: var(--rhythm,1.55); letter-spacing: inherit; word-spacing: inherit;
+  display: inline-flex; justify-content: center; align-items: center; gap: .32rem;
+}
+.atelier button svg {flex: none}
+.atelier button:hover {text-decoration: underline; text-underline-offset: .2em}
+.atelier-head button {border-color: transparent; background: transparent}
+.atelier button:focus-visible {outline: 3px solid var(--focus,#754b73);outline-offset: 2px;box-shadow: 0 0 0 2px var(--atelier-sky)}
+@media (max-width: 400px) {
+  .atelier-tools {justify-content: flex-start}
+}
+@media (prefers-color-scheme: dark) {
+  :root:is(:not([data-tema]),[data-tema="sistema"]) #atelier {
+    --atelier-ink: #e2e8ff; --atelier-line: #9ba9c8; --atelier-sky: #2b3550;
+    --atelier-cloud: #35405b; --atelier-ground: #232a3c; --atelier-btn: #273149;
+  }
+}
+:root[data-tema="escuro"] #atelier {
+  --atelier-ink: #e2e8ff; --atelier-line: #9ba9c8; --atelier-sky: #2b3550;
+  --atelier-cloud: #35405b; --atelier-ground: #232a3c; --atelier-btn: #273149;
+}
+:root[data-tema="contraste"] #atelier {
+  --atelier-ink: #fff; --atelier-line: #fff; --atelier-sky: #101010;
+  --atelier-cloud: #101010; --atelier-ground: #101010; --atelier-btn: #101010;
+  border-color: #fff;
+}
+@media (forced-colors: active) {
+  #atelier {background: Canvas; color: CanvasText; border: 1px solid CanvasText}
+  .atelier button {background: ButtonFace; color: ButtonText; border: 1px solid ButtonText}
+  .atelier button:focus-visible, .atelier canvas:focus-visible {outline: 3px solid Highlight}
+}

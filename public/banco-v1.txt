@@ -1,0 +1,120 @@
+A01 | Conversas | Você precisou de alguns segundos para começar a responder a uma pergunta feita de surpresa?
+A02 | Conversas | Você esperou uma pausa para falar e acabou perdendo a vez?
+A03 | Conversas | Você pediu um exemplo para entender o que alguém quis dizer?
+A04 | Conversas | Você anotou uma palavra para lembrar o que queria dizer enquanto outra pessoa falava?
+A05 | Conversas | Você voltou a um assunto porque ainda tinha algo a dizer sobre ele?
+A06 | Conversas | Você perguntou à pessoa com quem conversava se ela estava brincando?
+A07 | Conversas | Você enviou uma mensagem depois de uma conversa para completar sua resposta?
+A08 | Conversas | Você preparou a primeira frase antes de iniciar uma ligação?
+A09 | Conversas | Uma explicação mudou a forma como você entendeu uma conversa?
+A10 | Conversas | Você repetiu parte do que ouviu para confirmar se tinha entendido?
+B01 | Convívio e recuperação | Você reservou algum tempo a sós depois de um encontro com outras pessoas?
+B02 | Convívio e recuperação | Você escolheu um encontro com pouca gente quando tinha mais de uma opção?
+B03 | Convívio e recuperação | Você observou um grupo por um tempo antes de se juntar a ele?
+B04 | Convívio e recuperação | Você saiu por alguns minutos de uma reunião social para descansar?
+B05 | Convívio e recuperação | Você voltou a procurar companhia depois de passar algum tempo a sós?
+B06 | Convívio e recuperação | Você fez companhia a alguém enquanto cada um cuidava da sua atividade em silêncio?
+B07 | Convívio e recuperação | Você recusou um segundo compromisso social no mesmo dia para recuperar sua energia?
+B08 | Convívio e recuperação | Você combinou de chegar a um encontro junto com alguém de confiança?
+B09 | Convívio e recuperação | Você teve vontade de sair de um encontro antes da hora que tinha planejado?
+B10 | Convívio e recuperação | Você percebeu que precisava descansar só depois de chegar em casa após um encontro?
+C01 | Mudanças e previsibilidade | Você procurou fotos de um lugar antes de ir até lá pela primeira vez?
+C02 | Mudanças e previsibilidade | Você consultou a ordem das atividades antes de começar um compromisso?
+C03 | Mudanças e previsibilidade | Você reservou um intervalo entre dois compromissos para lidar com imprevistos?
+C04 | Mudanças e previsibilidade | Você precisou de alguns minutos para decidir o que fazer quando um plano foi cancelado?
+C05 | Mudanças e previsibilidade | Você voltou a conferir o horário de um compromisso quando a programação mudou?
+C06 | Mudanças e previsibilidade | Você escolheu algo já conhecido quando teve pouco tempo para decidir?
+C07 | Mudanças e previsibilidade | Você perguntou quanto tempo uma atividade duraria antes de aceitar participar?
+C08 | Mudanças e previsibilidade | Você preparou uma segunda opção para o caso de seu plano mudar?
+C09 | Mudanças e previsibilidade | Em um dia fora da rotina, você fez algo de costume para se situar?
+C10 | Mudanças e previsibilidade | Você retomou por engano a sequência antiga depois de uma mudança na rotina?
+D01 | Ambiente sensorial | Você mudou de lugar por causa do barulho de um aparelho?
+D02 | Ambiente sensorial | Você diminuiu o brilho de uma tela para deixar a leitura mais confortável?
+D03 | Ambiente sensorial | Você trocou uma peça de roupa porque o contato do tecido incomodava?
+D04 | Ambiente sensorial | Você abriu uma janela para diminuir um cheiro no ambiente?
+D05 | Ambiente sensorial | O movimento de pessoas ao redor atrapalhou sua leitura?
+D06 | Ambiente sensorial | Você escolheu um alimento pela sensação que ele deixava na boca?
+D07 | Ambiente sensorial | Você se afastou para evitar um toque inesperado em um lugar cheio?
+D08 | Ambiente sensorial | Um som repetitivo chamou sua atenção enquanto você fazia outra coisa?
+D09 | Ambiente sensorial | Você procurou tocar em um objeto de textura agradável durante uma pausa?
+D10 | Ambiente sensorial | Você ajustou a temperatura do ambiente para conseguir permanecer nele com conforto?
+E01 | Interesses e envolvimento | Você resolveu pesquisar por conta própria uma pergunta que surgiu durante o dia?
+E02 | Interesses e envolvimento | Você separou material sobre um assunto para consultar em outro momento?
+E03 | Interesses e envolvimento | Você voltou a explorar um interesse antigo depois de ver algo ligado a ele?
+E04 | Interesses e envolvimento | Você procurou alguém que também gostasse de um assunto para conversar sobre ele?
+E05 | Interesses e envolvimento | Você passou mais tempo do que imaginava fazendo algo de que gosta?
+E06 | Interesses e envolvimento | Você usou no dia a dia algo que aprendeu por curiosidade?
+E07 | Interesses e envolvimento | Você reservou um horário especificamente para uma atividade de que gosta?
+E08 | Interesses e envolvimento | Você registrou uma ideia de projeto para poder voltar a ela mais tarde?
+E09 | Interesses e envolvimento | Você usou um assunto de que gosta como ponto de partida para aprender algo novo?
+E10 | Interesses e envolvimento | Você experimentou um jeito diferente de fazer algo para ver o resultado?
+F01 | Comunicação de necessidades | Você pediu que alguém falasse mais devagar?
+F02 | Comunicação de necessidades | Você pediu para receber uma orientação por escrito?
+F03 | Comunicação de necessidades | Você combinou um sinal discreto para avisar quando precisasse de uma pausa?
+F04 | Comunicação de necessidades | Você disse que precisava de mais tempo antes de dar uma resposta?
+F05 | Comunicação de necessidades | Você indicou a alguém como prefere receber ajuda?
+F06 | Comunicação de necessidades | Você pediu que uma conversa acontecesse em um lugar mais tranquilo?
+F07 | Comunicação de necessidades | Você explicou antes de um encontro o que ajudaria você a participar?
+F08 | Comunicação de necessidades | Você mostrou uma imagem para explicar algo que era difícil descrever com palavras?
+F09 | Comunicação de necessidades | Você escolheu conversar em particular para dizer que algo estava incomodando?
+F10 | Comunicação de necessidades | Depois de uma atividade, você explicou o que poderia ter ajudado?
+G01 | Atenção no cotidiano | Você voltou a ler um aviso para localizar a informação de que precisava?
+G02 | Atenção no cotidiano | Você perdeu o fio do que estava fazendo quando uma música conhecida começou a tocar?
+G03 | Atenção no cotidiano | Você precisou olhar de novo para o primeiro produto enquanto comparava dois preços?
+G04 | Atenção no cotidiano | Você acompanhou melhor uma demonstração quando alguém apontou para a parte que estava explicando?
+G05 | Atenção no cotidiano | Você usou o dedo para marcar em que linha estava enquanto seguia uma receita?
+G06 | Atenção no cotidiano | Você perdeu a conta de quantos objetos tinha separado quando alguém falou com você?
+G07 | Atenção no cotidiano | Você voltou alguns segundos em um áudio para acompanhar o assunto?
+G08 | Atenção no cotidiano | Você abriu uma conversa diferente da que queria ler quando várias mensagens chegaram juntas?
+G09 | Atenção no cotidiano | Você leu um trecho em voz alta para perceber um detalhe que tinha passado despercebido?
+G10 | Atenção no cotidiano | Você cobriu parte de uma página para se concentrar no trecho que queria ler?
+H01 | Início e retomada de tarefas | Você escolheu uma ação pequena para começar uma tarefa que parecia grande?
+H02 | Início e retomada de tarefas | Você passou algum tempo decidindo por onde começar mesmo com o material já à mão?
+H03 | Início e retomada de tarefas | Você examinou o que já tinha feito para descobrir de onde continuar depois de uma interrupção?
+H04 | Início e retomada de tarefas | Você pediu ajuda para escolher por onde começar quando duas tarefas pareciam igualmente urgentes?
+H05 | Início e retomada de tarefas | Você deixou uma pista do ponto em que parou antes de interromper uma atividade?
+H06 | Início e retomada de tarefas | Você começou por uma parte do meio de uma tarefa porque o primeiro passo parecia difícil?
+H07 | Início e retomada de tarefas | Você refez por engano uma etapa que já estava pronta ao retomar uma tarefa no dia seguinte?
+H08 | Início e retomada de tarefas | Você usou uma frase provisória para começar a escrever?
+H09 | Início e retomada de tarefas | Você experimentou uma tarefa por poucos minutos para conseguir dar o primeiro passo?
+H10 | Início e retomada de tarefas | Você adiou o começo de uma tarefa à espera de um momento que parecia melhor?
+I01 | Organização de materiais | Você deixou à vista os objetos que ainda usaria naquele dia?
+I02 | Organização de materiais | Você escolheu um nome de arquivo que ajudasse a encontrá-lo depois?
+I03 | Organização de materiais | Você procurou em mais de um lugar um cabo de que precisava?
+I04 | Organização de materiais | Você reuniu em uma caixa os materiais de uma mesma atividade?
+I05 | Organização de materiais | Você conferiu se seus objetos de uso diário estavam na bolsa que levaria naquele dia?
+I06 | Organização de materiais | Você tirou de uma superfície de trabalho os materiais que pertenciam a outra atividade?
+I07 | Organização de materiais | Você fotografou um papel importante para poder consultá-lo depois?
+I08 | Organização de materiais | Você usou uma etiqueta para distinguir objetos parecidos?
+I09 | Organização de materiais | Você procurou em várias conversas até encontrar um arquivo que recebeu por mensagem?
+I10 | Organização de materiais | Você guardou uma peça pequena junto do objeto a que ela pertencia?
+J01 | Tempo e compromissos | Você terminou uma tarefa do dia a dia mais tarde do que previa?
+J02 | Tempo e compromissos | Você conferiu quanto tempo levaria para chegar a um lugar antes de combinar um horário?
+J03 | Tempo e compromissos | Você usou um alarme para lembrar quando começar a se preparar para sair?
+J04 | Tempo e compromissos | Você olhou as horas durante uma espera para conferir se ainda dava tempo de fazer outra coisa?
+J05 | Tempo e compromissos | Você consultou o que já tinha marcado antes de aceitar um convite?
+J06 | Tempo e compromissos | Você calculou quanto tempo um trabalho levaria antes de combinar a data de entrega?
+J07 | Tempo e compromissos | Você percebeu que já estava na hora de sair enquanto ainda fazia outra coisa?
+J08 | Tempo e compromissos | Você usou o tempo que uma atividade levou da última vez para planejar o seu dia?
+J09 | Tempo e compromissos | Você mudou o plano para o restante do dia quando um compromisso terminou mais tarde?
+J10 | Tempo e compromissos | Você precisou rever um prazo já combinado depois de aceitar uma nova tarefa?
+K01 | Ritmo e pausas | Você se levantou para se movimentar entre duas etapas de uma atividade?
+K02 | Ritmo e pausas | Você percebeu o próprio cansaço só quando parou uma atividade longa?
+K03 | Ritmo e pausas | Você escolheu de antemão em que ponto faria uma pausa durante uma atividade?
+K04 | Ritmo e pausas | Você diminuiu o ritmo depois de fazer várias atividades exigentes em sequência?
+K05 | Ritmo e pausas | Você aproveitou um intervalo para passar alguns minutos sem falar?
+K06 | Ritmo e pausas | Você alternou com outra tarefa por alguns minutos quando a atividade ficou repetitiva?
+K07 | Ritmo e pausas | Você fez uma pausa curta para beber água antes de continuar o que fazia?
+K08 | Ritmo e pausas | Você deu alguns passos enquanto esperava a sua vez?
+K09 | Ritmo e pausas | Você mudou de posição ao sentir desconforto durante uma atividade?
+K10 | Ritmo e pausas | Você dividiu uma tarefa que exigia esforço físico em partes menores para descansar entre elas?
+L01 | Memória de intenções | Você deixou perto da porta algo que precisava levar ao sair?
+L02 | Memória de intenções | Você se lembrou de algo que queria dizer a uma pessoa só depois de se despedir dela?
+L03 | Memória de intenções | Você gravou um lembrete de voz quando não podia parar para anotar um recado?
+L04 | Memória de intenções | Você marcou uma conversa no celular para lembrar de responder depois?
+L05 | Memória de intenções | Você se lembrou de uma compra que queria fazer só depois de passar pelo local?
+L06 | Memória de intenções | Você associou uma tarefa a um hábito para lembrar dela, como regar a planta depois do café?
+L07 | Memória de intenções | Você anotou para quem tinha emprestado um objeto?
+L08 | Memória de intenções | Você repassou logo um recado para evitar esquecê-lo mais tarde?
+L09 | Memória de intenções | Você usou uma lista no fim do dia para lembrar o que tinha ficado para depois?
+L10 | Memória de intenções | Você anotou uma pergunta que queria levar à próxima consulta?

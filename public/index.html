@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; font-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="description" content="Um questionário sobre o seu cotidiano. Reflita sobre as últimas quatro semanas e reúna suas próprias respostas por tema.">
+  <meta name="color-scheme" content="light dark">
+  <title>Meu ritmo — Um questionário sobre o seu cotidiano</title>
+  <link rel="icon" href="./marca.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./estilo.css">
+  <link rel="stylesheet" href="./atelier.css">
+  <link rel="stylesheet" href="./rodada.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir para o conteúdo</a>
+  <header class="site-header">
+    <div class="frame header-inner">
+      <button class="brand" data-go="inicio" aria-label="Meu ritmo, página inicial">
+        <img src="./marca.svg" width="44" height="44" alt=""><span>Meu ritmo</span>
+      </button>
+      <nav aria-label="Navegação principal">
+        <button class="nav-link" data-go="inicio" aria-current="page">Início</button>
+        <button class="nav-link" data-go="sobre">Sobre autismo e TDAH</button>
+      </nav>
+      <button type="button" class="settings-trigger" id="abrir-leitura" aria-haspopup="dialog">
+        <span class="type-icon" aria-hidden="true">Aa</span> Ajustar leitura
+      </button>
+    </div>
+  </header>
+  <main id="conteudo" tabindex="-1"></main>
+  <template id="home">
+    <div class="frame home">
+      <section class="hero" aria-labelledby="titulo-inicio">
+        <div class="hero-copy">
+          <p class="eyebrow">Um questionário sobre o seu cotidiano</p>
+          <h1 id="titulo-inicio" data-page-focus tabindex="-1">Seu cotidiano,<br><em>no seu ritmo.</em></h1>
+          <p class="hero-description">Como foram as últimas quatro semanas para você? Explore 50 situações de conversa, ambiente e rotina. No fim, escolha quais respostas quer guardar para uma conversa.</p>
+          <div class="hero-actions">
+            <button class="button-primary start" data-start>Começar</button>
+            <button class="text-button explore" data-go="sobre">Explorar o conteúdo informativo</button>
+          </div>
+        </div>
+        <div class="hero-art" id="atelier"></div>
+      </section>
+      <section class="how" aria-labelledby="como-funciona">
+        <h2 id="como-funciona">Como funciona</h2>
+        <ul class="overview">
+          <li><span class="icon-tile" data-icon="pages" aria-hidden="true"></span><div><strong>Uma situação por vez</strong><span>Responda, volte ou pule. Você decide quando avançar.</span></div></li>
+          <li><span class="icon-tile" data-icon="grid" aria-hidden="true"></span><div><strong>Um resumo por tema</strong><span>Releia suas escolhas nos 12 temas e marque seus destaques.</span></div></li>
+          <li><span class="icon-tile" data-icon="pause" aria-hidden="true"></span><div><strong>Espaço para pausar</strong><span>Continue do mesmo ponto enquanto esta aba estiver aberta.</span></div></li>
+        </ul>
+      </section>
+      <div class="home-notes">
+        <section><h2>Antes de começar</h2>
+          <p>Atenção, comunicação e sensibilidade ao ambiente também fazem parte das conversas sobre autismo e TDAH. Aqui, o ponto de partida é o que você viveu.</p>
+          <p>Este questionário é de reflexão pessoal. Não foi validado para rastrear ou diagnosticar autismo ou TDAH.</p>
+        </section>
+        <section><h2>Suas respostas ficam com você</h2>
+          <p>Você responde sem cadastro. A pausa funciona enquanto a aba estiver aberta. Fechar ou atualizar a página apaga o progresso.</p>
+          <button class="text-button" data-go="privacidade">Como funciona a privacidade</button>
+        </section>
+      </div>
+    </div>
+  </template>
+  <noscript><div class="frame"><h1>Meu ritmo</h1><p>Para responder na memória desta aba e ver o resumo, habilite o JavaScript no navegador.</p></div></noscript>
+  <footer class="site-footer">
+    <div class="frame footer-inner">
+      <span class="footer-brand"><img src="./marca.svg" width="28" height="28" alt="">Meu ritmo</span>
+      <div><button class="text-button" data-go="sobre">Sobre autismo, TDAH e os instrumentos</button>
+      <button class="text-button" data-go="privacidade">Privacidade</button></div>
+    </div>
+  </footer>
+  <dialog id="ajustes" aria-labelledby="titulo-ajustes">
+    <div class="dialog-head">
+      <h2 id="titulo-ajustes" tabindex="-1" autofocus>Ajustar leitura</h2>
+      <button class="close" type="button" aria-label="Fechar ajustes de leitura" data-close>×</button>
+    </div>
+    <div class="dialog-body">
+      <fieldset><legend>Tema</legend><div class="choices">
+        <label><input type="radio" name="tema" value="sistema" checked> Sistema</label>
+        <label><input type="radio" name="tema" value="claro"> Claro</label>
+        <label><input type="radio" name="tema" value="escuro"> Escuro</label>
+        <label><input type="radio" name="tema" value="contraste"> Alto contraste</label>
+      </div></fieldset>
+      <fieldset><legend>Tamanho do texto</legend><div class="choices">
+        <label><input type="radio" name="tamanho" value="padrao" checked> Padrão</label>
+        <label><input type="radio" name="tamanho" value="grande"> Grande</label>
+        <label><input type="radio" name="tamanho" value="maior"> Muito grande</label>
+      </div></fieldset>
+      <fieldset><legend>Espaçamento</legend><div class="choices">
+        <label><input type="radio" name="espacamento" value="padrao" checked> Padrão</label>
+        <label><input type="radio" name="espacamento" value="amplo"> Amplo</label>
+      </div></fieldset>
+      <label class="check-pref"><input type="checkbox" id="barra" checked> Mostrar barra de progresso</label>
+      <p class="hint">O número da pergunta fica sempre visível.</p>
+    </div>
+    <div class="dialog-foot"><button class="button-secondary" id="restaurar">Restaurar leitura padrão</button>
+      <button class="button-primary" data-close>Concluir ajustes</button></div>
+    <p class="sr-only" role="status" id="aviso-ajustes"></p>
+  </dialog>
+</body>
+</html>
