@@ -56,6 +56,8 @@ for (const [tema, seletor] of Object.entries(temas)) {
       verificar(p, "atelier-line", fundo, 3);
       verificar(p, "focus", fundo, 3);
     }
+    verificar(p, "atelier-action", "atelier-active", 4.5);
+    verificar(p, "focus", "atelier-active", 3);
   });
 }
 

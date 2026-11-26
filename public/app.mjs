@@ -1,7 +1,7 @@
 import { lerBanco } from './motor.mjs';
 import { iniciarFluxo, renderFluxo, temSessao, telaSessao, limparFluxo, atualizarProgresso } from './fluxo.mjs';
 import { htmlInformacao, htmlPrivacidade } from './informacao.mjs';
-import { montarAtelier } from './atelier.mjs';
+import { montarAtelier, suspenderAtelier } from './atelier.mjs';
 
 const main = document.querySelector('main');
 const dialog = document.querySelector('#ajustes');
@@ -20,6 +20,8 @@ function ordenarCabecalho() {
 ordenarCabecalho();
 narrow.addEventListener('change', ordenarCabecalho);
 const home = document.querySelector('#home').content.firstElementChild.cloneNode(true);
+const atelier = home.querySelector('#atelier');
+const voltarDaPausa = home.querySelector('[data-voltar-da-pausa]');
 const titulos = {
   inicio: 'Um questionário sobre o seu cotidiano', comecar: 'Antes de começar',
   sobre: 'Sobre autismo, TDAH e os instrumentos', privacidade: 'Privacidade',
@@ -51,10 +53,13 @@ function botaoDeRetorno() {
   return btn;
 }
 function go(screen, focus = true) {
+  const pausaInterativa = screen === 'atelier' && temSessao() && telaSessao() === 'pausa';
+  if (pausaInterativa) screen = 'inicio';
   if (!Object.hasOwn(titulos, screen)) return;
   telaVisivel = screen;
   const isHome = screen === 'inicio';
   const isInfo = screen === 'sobre' || screen === 'privacidade';
+  if (!isHome && atelier.isConnected) suspenderAtelier(atelier);
   for (const btn of document.querySelectorAll('header .nav-link')) {
     if (btn.dataset.go === screen) btn.setAttribute('aria-current', 'page');
     else btn.removeAttribute('aria-current');
@@ -62,8 +67,9 @@ function go(screen, focus = true) {
   document.title = 'Meu ritmo — ' + titulos[screen];
   if (isHome) {
     home.querySelector('[data-start]').textContent = temSessao() ? 'Voltar à minha rodada' : 'Começar';
+    voltarDaPausa.hidden = !pausaInterativa;
     main.replaceChildren(home);
-    montarAtelier(home.querySelector('#atelier'));
+    montarAtelier(atelier);
   } else if (isInfo) {
     main.innerHTML = screen === 'sobre' ? htmlInformacao : htmlPrivacidade;
     main.firstElementChild.prepend(botaoDeRetorno());
@@ -75,6 +81,11 @@ function go(screen, focus = true) {
     main.innerHTML = '<section class="reading-page"><h1 tabindex="-1" data-page-focus>O banco de situações está indisponível</h1><p>Atualize a página para tentar carregar as perguntas. O conteúdo informativo continua disponível.</p><button class="button-secondary" data-go="sobre">Explorar o conteúdo informativo</button></section>';
   }
   if (focus) {
+    if (pausaInterativa) {
+      voltarDaPausa.focus({ preventScroll: true });
+      voltarDaPausa.scrollIntoView({ block: 'center' });
+      return;
+    }
     const heading = main.querySelector('[data-page-focus]');
     heading?.focus({ preventScroll: true });
     window.scrollTo(0, 0);
@@ -125,10 +136,16 @@ function apagarAoSair() {
   limparFluxo();
   if (dialog.open) dialog.close();
   go('inicio', false);
+  suspenderAtelier(atelier);
 }
 window.addEventListener('pagehide', apagarAoSair);
 window.addEventListener('pageshow', event => {
   if (event.persisted) go('inicio');
+});
+document.addEventListener('visibilitychange', () => {
+  if (!atelier.isConnected) return;
+  if (document.hidden) suspenderAtelier(atelier);
+  else montarAtelier(atelier);
 });
 
 aplicarLeitura();

@@ -182,6 +182,22 @@ function cleanTrace(trace) {
   assert(trace.requests.every(req => new URL(req.url).origin === origin && req.method === 'GET' && !new URL(req.url).search));
 }
 
+function scenePixels(canvas) {
+  return canvas.evaluate(el => {
+    // A captura não modifica o contexto de desenho da aplicação.
+    const ctx = new OffscreenCanvas(el.width, el.height).getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(el, 0, 0);
+    const bytes = ctx.getImageData(0, 0, el.width, el.height).data;
+    let hash = 2166136261;
+    for (const byte of bytes) hash = Math.imul(hash ^ byte, 16777619);
+    return hash >>> 0;
+  });
+}
+
+function nextSceneFrame(page) {
+  return page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+}
+
 test('fontes abertas enquanto o banco carrega permanecem na tela; o questionário inicia depois', async t => {
   let release;
   const bankGate = new Promise(resolve => { release = resolve; });
@@ -271,6 +287,14 @@ test('teclado, grupo rotulado, avanço em branco, volta, pausa e recarga com arm
   await selectOnlyByKeyboard(page, button(page, 'Pausar'));
   await page.keyboard.press('Enter');
   assert.equal(await page.getByRole('radio').count(), 0);
+  await selectOnlyByKeyboard(page, button(page, 'Abrir a pausa em 3D'));
+  await page.keyboard.press('Enter');
+  await page.locator('#atelier').getByRole('img').waitFor();
+  assert.equal(await page.getByRole('radio').count(), 0);
+  await selectOnlyByKeyboard(page, button(page, 'Voltar ao questionário pausado'));
+  await page.keyboard.press('Enter');
+  await button(page, 'Continuar de onde parei').waitFor();
+  assert.equal(await page.getByRole('radio').count(), 0);
   await selectOnlyByKeyboard(page, button(page, 'Apagar e sair'));
   await page.keyboard.press('Enter');
   await selectOnlyByKeyboard(page, button(page, 'Voltar sem apagar'));
@@ -293,16 +317,8 @@ test('objeto 3D facultativo, sem movimento automático, ajustável por teclado e
   await canvas.waitFor();
   assert(await canvas.getAttribute('aria-label'), 'O desenho tem nome acessível');
   const count = trace.requests.length;
-  const pixels = () => canvas.evaluate(el => {
-    // A captura não modifica o contexto de desenho da aplicação.
-    const ctx = new OffscreenCanvas(el.width, el.height).getContext('2d', { willReadFrequently: true });
-    ctx.drawImage(el, 0, 0);
-    const bytes = ctx.getImageData(0, 0, el.width, el.height).data;
-    let hash = 2166136261;
-    for (const byte of bytes) hash = Math.imul(hash ^ byte, 16777619);
-    return hash >>> 0;
-  });
-  const frame = () => page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  const pixels = () => scenePixels(canvas);
+  const frame = () => nextSceneFrame(page);
   await frame();
   const initial = await pixels();
   await frame();
@@ -381,6 +397,103 @@ test('objeto 3D facultativo, sem movimento automático, ajustável por teclado e
   cleanTrace(trace);
 });
 
+test('ateliê responde ao arraste e ao pulso manual, respeitando o movimento reduzido', async t => {
+  const { page, context, trace } = await open(t);
+  const canvas = page.locator('#atelier').getByRole('img');
+  const explorar = button(page, 'Explorar');
+  const desacelerar = button(page, 'Desacelerar');
+  const pulso = button(page, 'Enviar pulso');
+  const contarRequisicoes = trace.requests.length;
+  await canvas.waitFor();
+  await explorar.click();
+  assert.equal(await explorar.getAttribute('aria-pressed'), 'true');
+  assert.equal(await desacelerar.getAttribute('aria-pressed'), 'false');
+  await canvas.scrollIntoViewIfNeeded();
+  const area = await canvas.boundingBox();
+  const x = area.x + area.width / 2;
+  const y = area.y + area.height / 2;
+  await page.mouse.move(x, y);
+  await nextSceneFrame(page);
+  const inicial = await scenePixels(canvas);
+  await page.mouse.down();
+  await page.mouse.move(x + area.width / 5, y + area.height / 8, { steps: 8 });
+  await page.mouse.up();
+  await nextSceneFrame(page);
+  assert.notEqual(await scenePixels(canvas), inicial, 'Arrastar muda a projeção em 3D');
+
+  await desacelerar.click();
+  assert.equal(await desacelerar.getAttribute('aria-pressed'), 'true');
+  assert.equal(await explorar.getAttribute('aria-pressed'), 'false');
+  await nextSceneFrame(page);
+  const repouso = await scenePixels(canvas);
+  await selectOnlyByKeyboard(page, pulso);
+  await page.keyboard.press('Enter');
+  await nextSceneFrame(page);
+  const estatico = await scenePixels(canvas);
+  assert.notEqual(estatico, repouso, 'O pulso reduzido ainda dá retorno visual');
+  await nextSceneFrame(page);
+  assert.equal(await scenePixels(canvas), estatico, 'O pulso reduzido permanece sem movimento');
+
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.clock.install();
+  await page.clock.runFor(1000);
+  const antes = await scenePixels(canvas);
+  await page.clock.runFor(1000);
+  assert.equal(await scenePixels(canvas), antes, 'A preferência padrão também repousa sem interação');
+  await pulso.click();
+  await page.clock.runFor(150);
+  const faseInicial = await scenePixels(canvas);
+  await page.clock.runFor(250);
+  assert.notEqual(await scenePixels(canvas), faseInicial, 'O pulso solicitado evolui ao longo do tempo');
+  await page.clock.runFor(4000);
+  const apos = await scenePixels(canvas);
+  await page.clock.runFor(1000);
+  assert.equal(await scenePixels(canvas), apos, 'O pulso termina e a cena volta ao repouso');
+  assert.deepEqual(trace.requests.slice(contarRequisicoes), []);
+  await cleanStorage(page, context);
+  cleanTrace(trace);
+});
+
+test('em toque, o ateliê gira no arraste horizontal e permite rolar a página na vertical', async t => {
+  const { page, context, trace } = await open(t, {
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  const canvas = page.locator('#atelier').getByRole('img');
+  await canvas.scrollIntoViewIfNeeded();
+  const cdp = await context.newCDPSession(page);
+  async function deslizar(deltaX, deltaY) {
+    const area = await canvas.boundingBox();
+    const x = area.x + area.width / 2;
+    const y = area.y + area.height / 2;
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+    for (let passo = 1; passo <= 8; passo++) {
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{
+        x: x + deltaX * passo / 8, y: y + deltaY * passo / 8,
+      }] });
+    }
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await nextSceneFrame(page);
+  }
+
+  const contarRequisicoes = trace.requests.length;
+  const inicial = await scenePixels(canvas);
+  await deslizar(76, 0);
+  const girado = await scenePixels(canvas);
+  assert.notEqual(girado, inicial);
+  const antes = await page.evaluate(() => scrollY);
+  await deslizar(0, -86);
+  await page.waitForFunction(y => scrollY > y + 20, antes);
+  assert.equal(await scenePixels(canvas), girado, 'O toque vertical não inclina nem dispara um pulso');
+  await canvas.scrollIntoViewIfNeeded();
+  const area = await canvas.boundingBox();
+  await page.touchscreen.tap(area.x + area.width / 2, area.y + area.height / 2);
+  await nextSceneFrame(page);
+  assert.notEqual(await scenePixels(canvas), girado, 'Tocar a cena destaca um ponto de luz');
+  await noOverflow(page);
+  assert.deepEqual(trace.requests.slice(contarRequisicoes), []);
+  cleanTrace(trace);
+});
+
 async function settings(page) {
   await button(page, 'Ajustar leitura').first().click();
   return page.getByRole('dialog', { name: 'Ajustar leitura' });
@@ -416,10 +529,10 @@ test('leitura do sistema, temas manuais, foco no retorno, texto ampliado e reflo
   await largeDialog.getByRole('button', { name: 'Concluir ajustes' }).click();
   await cdp.send('Page.setFontSizes', { fontSizes: { standard: 16 } });
   const systemDark = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  assert.equal(systemDark, 'rgb(21, 26, 41)');
+  assert.equal(await page.locator('html').evaluate(el => getComputedStyle(el).colorScheme), 'dark');
   await page.emulateMedia({ colorScheme: 'light' });
   const systemLight = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  assert.equal(systemLight, 'rgb(249, 250, 253)');
+  assert.equal(await page.locator('html').evaluate(el => getComputedStyle(el).colorScheme), 'light');
   assert.notEqual(systemLight, systemDark);
   await page.emulateMedia({ colorScheme: 'dark' });
   await start(page);

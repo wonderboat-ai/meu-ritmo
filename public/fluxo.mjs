@@ -222,7 +222,11 @@ function pausa(pagina, go) {
     titulo('Questionário pausado'),
     descricao(`Você parou na pergunta ${posicao + 1} de ${rodada.itens.length}. Suas respostas estão ocultas. Pode continuar deste ponto enquanto a página estiver aberta.`),
     descricao('Atualizar ou fechar esta página apaga o progresso.'),
-    acoes(botao('Continuar de onde parei', () => go('pergunta'), 'button-primary'), botao('Apagar e sair', () => go('apagar'), 'button-link'))
+    acoes(
+      botao('Continuar de onde parei', () => go('pergunta'), 'button-primary'),
+      botao('Abrir a pausa em 3D', () => go('atelier')),
+      botao('Apagar e sair', () => go('apagar'), 'button-link')
+    )
   );
 }
 

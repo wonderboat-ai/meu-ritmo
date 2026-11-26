@@ -1,6 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
-  <path fill="#3656d9" d="M29 29C17 28 5 23 5 14 5 8 10 4 16 5c9 1 13 13 13 24Z"/>
-  <path fill="#edb13e" d="M31 29C32 17 37 5 46 5c6 0 10 5 9 11-1 9-13 13-24 13Z"/>
-  <path fill="#ec725b" d="M31 31c12 1 24 6 24 15 0 6-5 10-11 9-9-1-13-13-13-24Z"/>
-  <path fill="#22967d" d="M29 31c-1 12-6 24-15 24-6 0-10-5-9-11 1-9 13-13 24-13Z"/>
+  <defs>
+    <linearGradient id="azul" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#28D8FF"/><stop offset="1" stop-color="#254BFE"/>
+    </linearGradient>
+    <linearGradient id="amarelo" x1="1" x2="0" y1="0" y2="1">
+      <stop stop-color="#FFF052"/><stop offset="1" stop-color="#F99A14"/>
+    </linearGradient>
+    <linearGradient id="vermelho" x1="1" x2="0" y1="1" y2="0">
+      <stop stop-color="#FF7261"/><stop offset="1" stop-color="#E91A44"/>
+    </linearGradient>
+    <linearGradient id="verde" x1="0" x2="1" y1="1" y2="0">
+      <stop stop-color="#44EBA4"/><stop offset="1" stop-color="#009A72"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#azul)" d="M29 29C17 28 5 23 5 14 5 8 10 4 16 5c9 1 13 13 13 24Z"/>
+  <path fill="url(#amarelo)" d="M31 29C32 17 37 5 46 5c6 0 10 5 9 11-1 9-13 13-24 13Z"/>
+  <path fill="url(#vermelho)" d="M31 31c12 1 24 6 24 15 0 6-5 10-11 9-9-1-13-13-13-24Z"/>
+  <path fill="url(#verde)" d="M29 31c-1 12-6 24-15 24-6 0-10-5-9-11 1-9 13-13 24-13Z"/>
 </svg>

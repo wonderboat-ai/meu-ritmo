@@ -1,75 +1,292 @@
 #atelier {
-  --atelier-ink: #243257;
-  --atelier-line: #6e7994;
-  --atelier-sky: #e9edfa;
-  --atelier-cloud: #f2f4fd;
-  --atelier-ground: #dce2f4;
-  --atelier-btn: #f8f9fe;
+  --atelier-ink: #172c51;
+  --atelier-line: #58739e;
+  --atelier-sky: #f1f6ff;
+  --atelier-cloud: #fff;
+  --atelier-ground: #e8effc;
+  --atelier-btn: #fff;
+  --atelier-active: #e2edff;
+  --atelier-action: #1949ae;
+  --atelier-focus: #ffe36c;
+  --atelier-inset: clamp(.55rem, 2.3vw, .9rem);
   width: 100%;
-  min-width: 0;
   color: var(--atelier-ink);
-  background: radial-gradient(ellipse at 40% 35%, var(--atelier-cloud), var(--atelier-sky) 62%, var(--atelier-ground));
-  border-radius: 1.3rem;
-  border: 1px solid color-mix(in srgb, var(--atelier-line) 45%, transparent);
-  overflow: visible;
+  background: linear-gradient(160deg, var(--atelier-cloud), var(--atelier-sky) 48%, var(--atelier-ground));
+  border: 1px solid var(--atelier-line);
+  border-radius: 1rem;
+  box-shadow: 0 1rem 2.6rem rgb(10 25 59 / .12);
+  overflow-wrap: anywhere;
 }
-.atelier-head, .atelier-tools {
-  display: flex; flex-wrap: wrap; align-items: center; gap: .4rem;
-  padding: .55rem clamp(.7rem, 2vw, 1.1rem);
+
+.atelier-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .2rem .65rem;
+  padding: .4rem var(--atelier-inset);
+  border-bottom: 1px solid var(--line);
 }
-.atelier-head {justify-content: space-between}
-.atelier-name {font-weight: 650; font-size: .85rem; letter-spacing: .015em}
-.atelier-visor canvas {width: 100%; height: auto; aspect-ratio: 1.55; display: block}
-.atelier-visor canvas:focus-visible {outline-offset: -5px}
-.atelier-tools {padding-top: .15rem; padding-bottom: .85rem; justify-content: center}
+
+.atelier-name {
+  display: flex;
+  flex-direction: column;
+  gap: .32rem;
+  color: var(--atelier-ink);
+  margin: .36rem 0;
+  font: inherit;
+  font-weight: 720;
+  line-height: 1.22;
+}
+
+.atelier-name::before {
+  content: "";
+  width: 2.45rem;
+  max-width: 100%;
+  height: 3px;
+  border-radius: 9px;
+  background: var(--signal-gradient, linear-gradient(90deg, #2384ff, #22b287, #ffcc42, #fa4e64));
+}
+
+.atelier-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  max-width: 100%;
+}
+
+.atelier-body {
+  display: grid;
+  gap: .62rem;
+  padding: .68rem var(--atelier-inset) .45rem;
+}
+
+.atelier-mode, .atelier-tools, .atelier-extra-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: .4rem;
+}
+
+.atelier-mode > button {flex: 1 1 auto}
+.atelier-tools > button {flex: 1 1 auto}
+.atelier-stage {margin: 0}
+
+.atelier-visor {
+  position: relative;
+  border: 1px solid #7395c6;
+  border-radius: .55rem;
+  color: #ecf5ff;
+  background: #061127;
+  overflow: clip;
+}
+
+.atelier-visor::before, .atelier-visor::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  width: .72rem;
+  height: .72rem;
+  border: solid #8abaff;
+  pointer-events: none;
+}
+
+.atelier-visor::before {
+  inset: .38rem auto auto .38rem;
+  border-width: 1px 0 0 1px;
+  border-top-left-radius: .13rem;
+}
+
+.atelier-visor::after {
+  inset: auto .38rem .38rem auto;
+  border-width: 0 1px 1px 0;
+  border-bottom-right-radius: .13rem;
+}
+
+.atelier-visor canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1.55;
+  cursor: grab;
+  touch-action: pan-y pinch-zoom;
+}
+
+.atelier-visor canvas[data-arrastando] {cursor: grabbing}
+
+.atelier-visor canvas:focus-visible {
+  outline: 3px solid var(--atelier-focus);
+  outline-offset: -6px;
+  box-shadow: none;
+}
+
+.atelier-caption, .atelier-legenda {
+  margin: 0;
+  font-size: .86rem;
+  line-height: var(--rhythm);
+}
+
+.atelier-caption {padding: .55rem .12rem .1rem}
+.atelier-legenda {padding: .9rem 1.05rem}
+
 .atelier-extra {
-  margin: -.5rem clamp(.7rem, 2vw, 1.1rem) .3rem;
-  color: var(--atelier-ink); font-size: .8rem;
+  border-top: 1px solid var(--line);
+  color: var(--atelier-ink);
+  font-size: .86rem;
 }
+
 .atelier-extra summary {
-  min-height: 44px; width: fit-content; max-width: 100%; margin-inline: auto;
-  padding: .6rem .4rem; cursor: pointer; text-decoration: underline; text-underline-offset: .2em;
+  width: fit-content;
+  max-width: 100%;
+  padding: .57rem .12rem;
+  color: var(--atelier-ink);
+  text-underline-offset: .2em;
 }
-.atelier-extra-opcoes {
-  display: flex; flex-wrap: wrap; gap: .45rem; justify-content: center; padding-bottom: .6rem;
-}
+
+.atelier-extra summary::marker {color: currentColor}
+.atelier-extra summary:hover {text-decoration: underline}
+.atelier-extra-opcoes {padding-block: .18rem .35rem}
+
 .atelier-extra-opcoes label {
-  display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: .4rem;
-  cursor: pointer; color: var(--atelier-ink); font-size: .8rem;
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 44px;
+  padding: .34rem .52rem;
+  max-width: 100%;
+  border: 1px solid var(--atelier-line);
+  border-radius: .42rem;
+  cursor: pointer;
+  background: var(--atelier-btn);
 }
-.atelier-extra-opcoes input {accent-color: var(--atelier-ink); width: 1.05rem; height: 1.05rem}
-.atelier-legenda {padding: 1rem 1.2rem; margin: 0}
+
+.atelier-extra-opcoes input {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--atelier-action);
+}
+
 .atelier button {
-  min-height: 44px; min-width: 44px; max-width: 100%; padding: .4rem .6rem;
-  border: 1px solid var(--atelier-line); border-radius: .5rem; color: var(--atelier-ink);
-  background: var(--atelier-btn); font: inherit; font-size: .8rem;
-  line-height: var(--rhythm,1.55); letter-spacing: inherit; word-spacing: inherit;
-  display: inline-flex; justify-content: center; align-items: center; gap: .32rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .37rem;
+  min-height: 44px;
+  min-width: 44px;
+  max-width: 100%;
+  padding: .4rem .54rem;
+  border: 1px solid var(--atelier-line);
+  border-radius: .42rem;
+  color: var(--atelier-ink);
+  background: var(--atelier-btn);
+  font: inherit;
+  font-size: .84rem;
+  font-weight: 570;
+  line-height: var(--rhythm);
+  letter-spacing: inherit;
+  word-spacing: inherit;
 }
+
 .atelier button svg {flex: none}
 .atelier button:hover {text-decoration: underline; text-underline-offset: .2em}
-.atelier-head button {border-color: transparent; background: transparent}
-.atelier button:focus-visible {outline: 3px solid var(--focus,#754b73);outline-offset: 2px;box-shadow: 0 0 0 2px var(--atelier-sky)}
-@media (max-width: 400px) {
-  .atelier-tools {justify-content: flex-start}
+.atelier-head button {background: transparent}
+
+.atelier-mode button[aria-pressed="true"] {
+  border-color: var(--atelier-action);
+  box-shadow: inset 0 -3px var(--atelier-action);
+  background: var(--atelier-active);
+  color: var(--atelier-action);
+  font-weight: 720;
 }
+
+.atelier button.atelier-signal {
+  border-color: var(--atelier-action);
+  background: var(--atelier-active);
+  color: var(--atelier-action);
+  font-weight: 720;
+}
+
+.atelier button:focus-visible, .atelier summary:focus-visible, .atelier input:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.atelier-mode button[aria-pressed="true"]:focus-visible {
+  box-shadow: inset 0 -3px var(--atelier-action), 0 0 0 2px var(--atelier-sky);
+}
+
 @media (prefers-color-scheme: dark) {
-  :root:is(:not([data-tema]),[data-tema="sistema"]) #atelier {
-    --atelier-ink: #e2e8ff; --atelier-line: #9ba9c8; --atelier-sky: #2b3550;
-    --atelier-cloud: #35405b; --atelier-ground: #232a3c; --atelier-btn: #273149;
+  :root:is(:not([data-tema]), [data-tema="sistema"]) #atelier {
+    --atelier-ink: #eff4ff;
+    --atelier-line: #8ba6d3;
+    --atelier-sky: #101d36;
+    --atelier-cloud: #172844;
+    --atelier-ground: #0d172a;
+    --atelier-btn: #13233d;
+    --atelier-active: #21395c;
+    --atelier-action: #a2d8ff;
   }
 }
+
 :root[data-tema="escuro"] #atelier {
-  --atelier-ink: #e2e8ff; --atelier-line: #9ba9c8; --atelier-sky: #2b3550;
-  --atelier-cloud: #35405b; --atelier-ground: #232a3c; --atelier-btn: #273149;
+  --atelier-ink: #eff4ff;
+  --atelier-line: #8ba6d3;
+  --atelier-sky: #101d36;
+  --atelier-cloud: #172844;
+  --atelier-ground: #0d172a;
+  --atelier-btn: #13233d;
+  --atelier-active: #21395c;
+  --atelier-action: #a2d8ff;
 }
+
 :root[data-tema="contraste"] #atelier {
-  --atelier-ink: #fff; --atelier-line: #fff; --atelier-sky: #101010;
-  --atelier-cloud: #101010; --atelier-ground: #101010; --atelier-btn: #101010;
-  border-color: #fff;
+  --atelier-ink: #fff;
+  --atelier-line: #fff;
+  --atelier-sky: #101010;
+  --atelier-cloud: #101010;
+  --atelier-ground: #101010;
+  --atelier-btn: #101010;
+  --atelier-active: #101010;
+  --atelier-action: #fff;
+  --atelier-focus: #ffde70;
+  background: var(--atelier-ground);
+  box-shadow: none;
 }
+
+:root[data-tema="contraste"] .atelier-visor {
+  border-color: var(--atelier-line);
+  color: var(--atelier-ink);
+  background: var(--atelier-ground);
+}
+
+:root[data-tema="contraste"] .atelier-name::before,
+:root[data-tema="contraste"] .atelier-visor::before,
+:root[data-tema="contraste"] .atelier-visor::after {display: none}
+
 @media (forced-colors: active) {
-  #atelier {background: Canvas; color: CanvasText; border: 1px solid CanvasText}
-  .atelier button {background: ButtonFace; color: ButtonText; border: 1px solid ButtonText}
-  .atelier button:focus-visible, .atelier canvas:focus-visible {outline: 3px solid Highlight}
+  #atelier, :root[data-tema="contraste"] #atelier {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+  .atelier-visor, :root[data-tema="contraste"] .atelier-visor {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+  .atelier button, .atelier button.atelier-signal, .atelier-extra-opcoes label {
+    background: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonText;
+  }
+  .atelier-mode button[aria-pressed="true"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+    border: 1px solid ButtonText;
+  }
+  .atelier-name::before, .atelier-visor::before, .atelier-visor::after {display: none}
 }

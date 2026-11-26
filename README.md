@@ -1,4 +1,4 @@
-# Meu ritmo · versão 2.0
+# Meu ritmo · versão 2.1
 
 Um questionário sobre o seu cotidiano. Uma pessoa adulta pode recordar as últimas quatro semanas, responder a 50 situações e imprimir os exemplos que escolheu para uma conversa.
 
@@ -10,7 +10,9 @@ Para usar offline, baixe o ZIP do repositório, extraia os arquivos e abra **ind
 
 O conteúdo educativo e os ajustes de leitura estão disponíveis para qualquer idade. A rodada pede apenas a confirmação “Tenho 18 anos ou mais”. O banco é autoral e não foi validado para rastrear ou diagnosticar autismo ou TDAH. AQ de adultos e ASRS-v1.1 de seis itens têm descrições e links oficiais na página informativa.
 
-A escultura de quatro fitas na abertura fica parada até a pessoa decidir interagir. É possível girá-la ou restaurar sua posição com os botões. Em **Mais ajustes do objeto**, a pessoa pode inclinar a escultura e reduzir a intensidade das cores com **Cores suaves**. Com o foco sobre o desenho, as setas giram ou inclinam e a tecla Home restaura a posição. **Ocultar objeto 3D** mantém todas as demais funções disponíveis.
+A rede neural em 3D fica parada até a pessoa escolher interagir. Em **Explorar**, é possível girar a rede, mudar o ângulo e enviar um pulso de luz. **Desacelerar** apresenta menos conexões e luz mais suave. A interação aceita mouse, toque, botões e teclado. Com o foco no desenho, as setas controlam a rotação e a inclinação. A tecla Home restaura a posição.
+
+Em **Mais ajustes do objeto**, a pessoa pode reduzir a intensidade das cores e escolher movimento reduzido. A cena também respeita a preferência de movimento reduzido do sistema. **Ocultar objeto 3D** recolhe a cena. A pausa no questionário oferece um atalho para a rede neural e preserva o ponto da rodada ao voltar. É uma atividade opcional de exploração sensorial.
 
 ## Rodar e testar o código
 
@@ -62,7 +64,7 @@ npm run pages
 | `public/banco-v1.txt` | Banco canônico versionado com 120 linhas. |
 | `public/motor.mjs` e `public/fluxo.mjs` | Sorteio, respostas, pausa, revisão, resumo e impressão dos destaques. |
 | `public/informacao.mjs` | Textos educativos, fontes oficiais, privacidade e contato público. |
-| `public/atelier.mjs` e `public/atelier.css` | Desenho local e controles da escultura. |
+| `public/atelier.mjs`, `public/constelacao.mjs` e `public/atelier.css` | Controles, desenho da rede neural em perspectiva e estilos da experiência 3D. |
 | `public/index.html`, `public/app.mjs`, `public/estilo.css` e `public/rodada.css` | Entrada, navegação, temas, legibilidade e impressão. |
 | `scripts/` e `tests/` | Servidor, geração dos dois arquivos de distribuição e testes. |
 
